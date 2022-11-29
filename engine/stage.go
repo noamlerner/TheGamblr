@@ -1,4 +1,4 @@
-package TheGamblr
+package engine
 
 type Stage int
 
@@ -10,7 +10,7 @@ const (
 	River
 )
 
-func (s Stage) NextStage() Stage {
+func (s Stage) nextStage() Stage {
 	n := s + 1
 	if n == NumStages {
 		n = 0

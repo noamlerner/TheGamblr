@@ -1,71 +1,71 @@
-package TheGamblr
+package engine
 
 import (
 	"sort"
 )
 
-type Dealer struct {
+type dealer struct {
 	deck        *Deck
-	board       *Board
+	board       *boardState
 	gameConfig  *GameConfig
-	lastToRaise *BoardPlayer
+	lastToRaise *playerState
 	// any chips that were in a split pot but couldn't be divided evenly
 	carryOverPot int
 }
 
-func NewDealer() *Dealer {
-	return &Dealer{
+func newDealer() *dealer {
+	return &dealer{
 		gameConfig: NewDefaultGameConfig(),
 		deck:       NewDeck(),
-		board:      NewBoard(),
+		board:      newBoardState(),
 	}
 }
 
-func (d *Dealer) PlayRound() EndRoundPlayers {
-	d.NewRound()
-	// PreFlop Betting
-	d.Betting()
+func (d *dealer) playRound() EndRoundPlayers {
+	d.newRound()
+	// PreFlop betting
+	d.betting()
 
 	for i := 0; i < 3; i++ {
-		winners := d.FindWinners()
+		winners := d.findWinners()
 		if winners != nil {
-			d.EndRound(winners)
+			d.endRound(winners)
 			return winners
 		}
-		d.NextStage()
+		d.nextStage()
 	}
 
-	winners := d.FindWinners()
-	d.EndRound(winners)
+	winners := d.findWinners()
+	d.endRound(winners)
 	return winners
 }
 
-func (d *Dealer) EndRound(endRoundPlayers EndRoundPlayers) {
-	d.CashOutRound(endRoundPlayers)
+func (d *dealer) endRound(endRoundPlayers EndRoundPlayers) {
+	d.cashOutRound(endRoundPlayers)
 	winnersByID := d.whoShowsTheirHand(endRoundPlayers)
 
-	state := d.board.ActiveState()
+	state := d.board.activeState()
 	endRoundBoard := &roundEndBoard{
 		activeBoard: *state.(*activeBoard),
 	}
-	d.board.IterateActivePlayers(func(p *BoardPlayer) {
+	d.board.iterateActivePlayers(func(p *playerState) {
 		w, ok := winnersByID[p.id]
 		if !ok {
 			w = &playerForWinnerCalculations{
 				p: p,
 			}
 		}
-		endRoundBoard.roundEndPlayers = append(endRoundBoard.roundEndPlayers, w.ToState())
+		endRoundBoard.roundEndPlayers = append(endRoundBoard.roundEndPlayers, w.toState())
 	})
 
-	d.board.IterateActivePlayers(func(p *BoardPlayer) {
+	d.board.iterateActivePlayers(func(p *playerState) {
 		p.actor.RoundResults(endRoundBoard)
 	})
 }
 
-// whoShowsTheirHand takes the EndRoundPlayers after CashOutRound is complete and sets willShowHand to true on anyone
+// whoShowsTheirHand takes the EndRoundPlayers after cashOutRound is complete and sets willShowHand to true on anyone
 // required to show their hand.
-func (d *Dealer) whoShowsTheirHand(winners EndRoundPlayers) map[string]*playerForWinnerCalculations {
+func (d *dealer) whoShowsTheirHand(winners EndRoundPlayers) map[string]*playerForWinnerCalculations {
 	if len(winners) == 1 {
 		return map[string]*playerForWinnerCalculations{
 			winners[0].p.id: winners[0],
@@ -84,7 +84,7 @@ func (d *Dealer) whoShowsTheirHand(winners EndRoundPlayers) map[string]*playerFo
 	}
 
 	strongestHand := -1
-	d.board.IterateActivePlayersFromTo(d.lastToRaise.seatNumber, d.lastToRaise.seatNumber, func(p *BoardPlayer) {
+	d.board.iterateActivePlayersFromTo(d.lastToRaise.seatNumber, d.lastToRaise.seatNumber, func(p *playerState) {
 		w, ok := winnersByID[p.id]
 		if !ok {
 			// This player did not make it to the final ronud.
@@ -111,25 +111,25 @@ func (d *Dealer) whoShowsTheirHand(winners EndRoundPlayers) map[string]*playerFo
 	return winnersByID
 }
 
-func (d *Dealer) CashOutRound(winners EndRoundPlayers) {
+func (d *dealer) cashOutRound(winners EndRoundPlayers) {
 	if winners.Len() == 1 {
 		// We have a winner!
-		winners[0].WinChips(d.board.pot)
+		winners[0].winChips(d.board.pot)
 		return
 	}
 
 	// if true, then there is no split pot
 	winningHand := winners[0].hand.Beats(winners[1].hand)
-	if winningHand && winners[0].p.Status() != BoardPlayerStatusAllIn {
+	if winningHand && winners[0].p.Status() != PlayerStatusAllIn {
 		// Winners[0] gets the whole pot
-		winners[0].WinChips(d.board.pot)
+		winners[0].winChips(d.board.pot)
 		return
-	} else if winningHand && winners[0].p.Status() == BoardPlayerStatusAllIn {
+	} else if winningHand && winners[0].p.Status() == PlayerStatusAllIn {
 		d.splitPot([]*playerForWinnerCalculations{winners[0]})
 		if d.board.pot == 0 {
 			return
 		} else {
-			d.CashOutRound(winners[1:])
+			d.cashOutRound(winners[1:])
 			return
 		}
 	}
@@ -146,11 +146,11 @@ func (d *Dealer) CashOutRound(winners EndRoundPlayers) {
 		return
 	}
 
-	d.CashOutRound(winners[numWinners:])
+	d.cashOutRound(winners[numWinners:])
 }
 
 // splitPot should only be called on all winners. We will split the pot between all passed in players.
-func (d *Dealer) splitPot(winners EndRoundPlayers) {
+func (d *dealer) splitPot(winners EndRoundPlayers) {
 	// we start by figuring out how many pots there are. This should be 1 unless people went all in.
 	seenChipCount := map[int]bool{}
 	// we will iterate over this in order to build the different pots that can be split.
@@ -162,14 +162,14 @@ func (d *Dealer) splitPot(winners EndRoundPlayers) {
 		seenChipCount[w.p.chipsEnteredThisRound] = true
 	}
 	chipCount := map[string]int{}
-	d.board.IterateActivePlayers(func(p *BoardPlayer) {
+	d.board.iterateActivePlayers(func(p *playerState) {
 		chipCount[p.id] = p.chipsEnteredThisRound
 	})
 	sort.Ints(chipCountsContributed)
 
 	// now we figure out the size of the pots we are going to split
 	pots := map[int]int{}
-	d.board.IterateActivePlayers(func(p *BoardPlayer) {
+	d.board.iterateActivePlayers(func(p *playerState) {
 		for _, c := range chipCountsContributed {
 			chipsToPot := MinInt(p.chipsEnteredThisRound, c)
 			pots[c] += chipsToPot
@@ -192,7 +192,7 @@ func (d *Dealer) splitPot(winners EndRoundPlayers) {
 		for _, w := range winners {
 			if chipCount[w.p.id] >= c {
 				d.board.pot -= winnings
-				w.WinChips(winnings)
+				w.winChips(winnings)
 			}
 		}
 
@@ -202,10 +202,10 @@ func (d *Dealer) splitPot(winners EndRoundPlayers) {
 	}
 }
 
-// NewRound performs the following actions
+// newRound performs the following actions
 // 1. Shuffle the deck
-// 2. Call board.NewRound
-// // 1. Call NewRound on all players
+// 2. Call board.newRound
+// // 1. Call newRound on all players
 // //// 1. Clears out the players cards
 // //// 2. Marks the player as out of the game if their stack is at 0
 // //// 3.Resets chipsEnteredThisStage and chipsEnteredThisRound
@@ -213,54 +213,54 @@ func (d *Dealer) splitPot(winners EndRoundPlayers) {
 // // 3. reset the pot to 0
 // // 4. reset the stage to PreFlop
 // 3. Deals the cards and assigns the blinds
-func (d *Dealer) NewRound() {
+func (d *dealer) newRound() {
 	d.deck.Shuffle()
 	onPlayer := 0
-	d.board.NewRound()
-	boardState := d.board.ActiveState()
-	d.board.IterateActivePlayers(func(p *BoardPlayer) {
-		if p.Status() != BoardPlayerStatusPlaying {
+	d.board.newRound()
+	boardState := d.board.activeState()
+	d.board.iterateActivePlayers(func(p *playerState) {
+		if p.Status() != PlayerStatusPlaying {
 			return
 		}
 		addedToPot := 0
 		switch onPlayer {
 		case 0:
-			// smallBlind
-			addedToPot = p.ReceiveCards(d.deck.NextCards(2), d.gameConfig.smallBlind, boardState)
-			d.AnnounceAction(p, SmallBlind, d.gameConfig.smallBlind)
+			// SmallBlind
+			addedToPot = p.receiveCards(d.deck.NextCards(2), d.gameConfig.SmallBlind, boardState)
+			d.announceAction(p, SmallBlind, d.gameConfig.SmallBlind)
 		case 1:
 			// big blind
-			addedToPot = p.ReceiveCards(d.deck.NextCards(2), d.gameConfig.smallBlind*2, boardState)
-			d.AnnounceAction(p, BigBlind, d.gameConfig.smallBlind*2)
+			addedToPot = p.receiveCards(d.deck.NextCards(2), d.gameConfig.SmallBlind*2, boardState)
+			d.announceAction(p, BigBlind, d.gameConfig.SmallBlind*2)
 			d.lastToRaise = p
 		default:
-			addedToPot = p.ReceiveCards(d.deck.NextCards(2), 0, boardState)
+			addedToPot = p.receiveCards(d.deck.NextCards(2), 0, boardState)
 		}
 		onPlayer++
-		d.board.AddToPot(addedToPot)
+		d.board.addToPot(addedToPot)
 	})
-	d.board.AddToPot(d.carryOverPot)
+	d.board.addToPot(d.carryOverPot)
 	d.carryOverPot = 0
 }
 
-func (d *Dealer) AnnounceAction(p *BoardPlayer, action Action, amount int) {
-	vAction := NVisibleAction(p.VisibleBoardPlayer(), action, amount)
-	d.board.IterateActivePlayers(func(p *BoardPlayer) {
+func (d *dealer) announceAction(p *playerState, action Action, amount int) {
+	vAction := newVisibleAction(p.visiblePlayerState(), action, amount)
+	d.board.iterateActivePlayers(func(p *playerState) {
 		p.actor.ReceiveUpdate(vAction)
 	})
 }
 
-func (d *Dealer) NextStage() {
-	switch d.board.NextStage() {
+func (d *dealer) nextStage() {
+	switch d.board.nextStage() {
 	case Flop:
-		d.board.AddCommunityCards(d.deck.NextCards(3)...)
+		d.board.addCommunityCards(d.deck.NextCards(3)...)
 	case Turn:
-		d.board.AddCommunityCards(d.deck.NextCard())
+		d.board.addCommunityCards(d.deck.NextCard())
 	case River:
-		d.board.AddCommunityCards(d.deck.NextCard())
+		d.board.addCommunityCards(d.deck.NextCard())
 	}
 }
-func (d *Dealer) Betting() {
+func (d *dealer) betting() {
 	// First To go
 	startAt := d.board.smallBlindButton
 	// Last to go exclusive
@@ -269,21 +269,21 @@ func (d *Dealer) Betting() {
 	// amount we need to call
 	callAmount := 0
 	// A raise must move the callAmount to this value
-	minRaiseTo := d.gameConfig.SmallBlind() * 2
+	minRaiseTo := d.gameConfig.SmallBlind * 2
 
 	// start/end positions, callAmount and raise to are different preflop
 	if d.board.stage == PreFlop {
-		callAmount = d.gameConfig.smallBlind * 2
+		callAmount = d.gameConfig.SmallBlind * 2
 		minRaiseTo = callAmount * 2
-		startAt = d.board.NextActiveSeat(d.board.NextActiveSeat(d.board.smallBlindButton))
+		startAt = d.board.nextActiveSeat(d.board.nextActiveSeat(d.board.smallBlindButton))
 		endAt = startAt
 	}
 
 	for iterate == true {
 		iterate = false
-		d.board.IterateActivePlayersFromTo(startAt, endAt, func(player *BoardPlayer) {
-			if player.Status() == BoardPlayerStatusAllIn ||
-				player.Status() == BoardPlayerStatusFolded ||
+		d.board.iterateActivePlayersFromTo(startAt, endAt, func(player *playerState) {
+			if player.Status() == PlayerStatusAllIn ||
+				player.Status() == PlayerStatusFolded ||
 				d.board.actingPlayersInRound == 1 {
 				// We do not want to play folded players.
 				// We also skip everyone if there is only one player left - that player won.
@@ -296,33 +296,33 @@ func (d *Dealer) Betting() {
 			switch action {
 			case CheckFold:
 				if callAmount-player.chipsEnteredThisStage > 0 {
-					player.Fold()
-					d.AnnounceAction(player, FoldAction, 0)
+					player.fold()
+					d.announceAction(player, FoldAction, 0)
 				}
 			case FoldAction:
 				// Player Folds, we will move on to the next player.
-				player.Fold()
-				d.AnnounceAction(player, FoldAction, 0)
+				player.fold()
+				d.announceAction(player, FoldAction, 0)
 			case CallAction:
 				// player calls, this might put them all in automatically.
-				chipsEntered := player.RemoveChips(callAmount - player.chipsEnteredThisStage)
-				d.board.AddToPot(chipsEntered)
-				d.AnnounceAction(player, CallAction, chipsEntered)
+				chipsEntered := player.removeChips(callAmount - player.chipsEnteredThisStage)
+				d.board.addToPot(chipsEntered)
+				d.announceAction(player, CallAction, chipsEntered)
 			case RaiseAction:
 				// Player Raises. There is a MinRaise, if they tried to Raise less than that, we
 				// will automatically put them there. The first MinRaise == BigBlind.
 				if raiseTo < minRaiseTo {
 					raiseTo = minRaiseTo
 				}
-				chipsToEnter := player.RemoveChips(raiseTo - player.chipsEnteredThisStage)
+				chipsToEnter := player.removeChips(raiseTo - player.chipsEnteredThisStage)
 				// In case this puts them all in, we need to recalculate the actual new raiseTo
 				raiseTo = player.chipsEnteredThisStage
 				// Next raise must be at least the amount of this raise
 				minRaiseTo = (raiseTo - callAmount) + raiseTo
 				callAmount = raiseTo
 				// Add chips into the board from the player.
-				d.board.AddToPot(chipsToEnter)
-				d.AnnounceAction(player, RaiseAction, chipsToEnter)
+				d.board.addToPot(chipsToEnter)
+				d.announceAction(player, RaiseAction, chipsToEnter)
 				d.lastToRaise = player
 
 				if endAt != player.seatNumber {
@@ -334,25 +334,25 @@ func (d *Dealer) Betting() {
 					iterate = true
 				}
 			}
-			if player.Status() == BoardPlayerStatusFolded {
-				d.board.PlayerFolded()
+			if player.Status() == PlayerStatusFolded {
+				d.board.playerFolded()
 			}
-			if player.Status() == BoardPlayerStatusAllIn {
-				d.board.PlayerWentAllIn()
+			if player.Status() == PlayerStatusAllIn {
+				d.board.playerWentAllIn()
 			}
 		})
 	}
 }
 
-// FindWinners will return nil if the game is not eligible to be won yet.
+// findWinners will return nil if the game is not eligible to be won yet.
 // It is assumed that whatever stage d.board is in has just ended.
 // If everyone folded, we will return the last one left
 // otherwise, we will return all remaining players in order of strongest to weakest.
-func (d *Dealer) FindWinners() EndRoundPlayers {
+func (d *dealer) findWinners() EndRoundPlayers {
 	if d.board.playersInRound == 1 {
-		var lastManStanding *BoardPlayer
-		d.board.IterateActivePlayers(func(p *BoardPlayer) {
-			if p.Status() == BoardPlayerStatusPlaying {
+		var lastManStanding *playerState
+		d.board.iterateActivePlayers(func(p *playerState) {
+			if p.Status() == PlayerStatusPlaying {
 				lastManStanding = p
 			}
 		})
@@ -371,8 +371,8 @@ func (d *Dealer) FindWinners() EndRoundPlayers {
 	}
 
 	handedBoardPlayers := make(EndRoundPlayers, 0, d.board.playersInRound)
-	d.board.IterateActivePlayers(func(p *BoardPlayer) {
-		if !p.Status().EligibleToWin() {
+	d.board.iterateActivePlayers(func(p *playerState) {
+		if !p.Status().eligibleToWin() {
 			return
 		}
 		h := NewHand(append(d.board.communityCards, p.cards...))

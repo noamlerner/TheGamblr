@@ -1,4 +1,4 @@
-package TheGamblr
+package engine
 
 type visibleAction struct {
 	actionTaken Action
@@ -26,7 +26,7 @@ func (v *visibleAction) Amount() int {
 	return v.amount
 }
 
-func NVisibleAction(player ActivePlayerState, actionTaken Action, amount int) VisibleAction {
+func newVisibleAction(player ActivePlayerState, actionTaken Action, amount int) VisibleAction {
 	return &visibleAction{
 		actionTaken: actionTaken,
 		player:      player,

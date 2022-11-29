@@ -1,4 +1,4 @@
-package TheGamblr
+package engine
 
 import (
 	"sort"
@@ -11,10 +11,10 @@ type Hand struct {
 	cards    []*Card
 	strength HandStrength
 
-	boardPlayer *BoardPlayer
+	boardPlayer *playerState
 }
 
-func NewHandForPlayer(board *Board, boardPlayer *BoardPlayer) *Hand {
+func NewHandForPlayer(board *boardState, boardPlayer *playerState) *Hand {
 	hand := NewHand(append(board.communityCards, boardPlayer.cards...))
 	hand.boardPlayer = boardPlayer
 	return hand

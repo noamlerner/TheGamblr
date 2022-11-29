@@ -1,4 +1,4 @@
-package TheGamblr
+package engine
 
 import (
 	"sort"

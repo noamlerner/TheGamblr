@@ -1,4 +1,4 @@
-package TheGamblr
+package engine
 
 import (
 	"testing"
@@ -52,11 +52,11 @@ func TestBoard_NextActiveSeat(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			players, _ := setupPlayers(test.playersAtSeats)
-			board := NewBoard()
+			board := newBoardState()
 			board.players = players
 			pos := test.startingPosition
 			for i := 0; i < len(test.playersAtSeats); i++ {
-				assert.Equal(t, test.playersAtSeats[i], board.NextActiveSeat(pos))
+				assert.Equal(t, test.playersAtSeats[i], board.nextActiveSeat(pos))
 				pos = test.playersAtSeats[i]
 			}
 		})

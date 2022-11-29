@@ -1,29 +1,29 @@
-package TheGamblr
-
-// activePlayerState is the struct that is visible to everyone
-type activePlayerState struct {
-	stack      int
-	status     BoardPlayerStatus
-	seatNumber int
-	id         string
-}
+package engine
 
 type ActivePlayerState interface {
 	// Stack returns how many chips this player has to bet.
 	Stack() int
-	// Status returns one of the possible BoardPlayerStatus
-	Status() BoardPlayerStatus
+	// Status returns one of the possible PlayerStatus
+	Status() PlayerStatus
 	// SeatNumber return the index of this player on the board
 	SeatNumber() int
 	// Id returns a unique player ID.
 	Id() string
 }
 
+// activePlayerState is the struct that is visible to everyone
+type activePlayerState struct {
+	stack      int
+	status     PlayerStatus
+	seatNumber int
+	id         string
+}
+
 func (v *activePlayerState) Stack() int {
 	return v.stack
 }
 
-func (v *activePlayerState) Status() BoardPlayerStatus {
+func (v *activePlayerState) Status() PlayerStatus {
 	return v.status
 }
 
