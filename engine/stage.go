@@ -10,10 +10,23 @@ const (
 	River
 )
 
+var (
+	stageName = map[Stage]string{
+		PreFlop: "PreFlop",
+		Flop:    "Flop",
+		Turn:    "Turn",
+		River:   "River",
+	}
+)
+
 func (s Stage) nextStage() Stage {
 	n := s + 1
 	if n == NumStages {
 		n = 0
 	}
 	return n
+}
+
+func (s Stage) Name() string {
+	return stageName[s]
 }

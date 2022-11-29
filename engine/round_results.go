@@ -1,18 +1,18 @@
 package engine
 
-type roundEndBoard struct {
+type roundResults struct {
 	activeBoard
 	roundEndPlayers []PlayerResults
 }
 
-func (r *roundEndBoard) PlayerResults() []PlayerResults {
+func (r *roundResults) PlayerResults() []PlayerResults {
 	return r.roundEndPlayers
 }
 
 type RoundResults interface {
 	// CommunityCards are the cards currently on the board. The first three cards will always be the flop, then the
 	// turn, then the river.
-	CommunityCards() []*Card
+	CommunityCards() Cards
 	// Pot returns the size of the current Pot.
 	Pot() int
 	// SmallBlindButton returns the index of the player in the Players slice that corresponds to the Small Blind Button.
