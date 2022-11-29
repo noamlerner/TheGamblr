@@ -23,3 +23,7 @@ func StrToCard(name string) *Card {
 		suit: StrToSuit(name[1:2]),
 	}
 }
+
+func (c *Card) ID() int {
+	return int(c.rank) * int(c.suit)
+}

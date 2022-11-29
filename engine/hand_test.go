@@ -186,7 +186,7 @@ func TestNewHand(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			allCards := NewDeckWithCards(StrToCards(test.allCards)).Shuffle().cards
+			allCards := NewDeckWithCards(StrToCards(test.allCards)).Shuffle().Cards()
 			hand := NewHand(allCards)
 			assert.Equal(t, test.handStrength, hand.strength)
 			resCards := hand.cards

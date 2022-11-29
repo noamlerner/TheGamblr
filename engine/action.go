@@ -16,7 +16,7 @@ var (
 		FoldAction:      "Folds",
 		CallAction:      "Calls",
 		RaiseAction:     "Raises To",
-		CheckFoldAction: "Check/Folds",
+		CheckFoldAction: "Checks",
 		SmallBlind:      "Pays Small Blind",
 		BigBlind:        "Pays Big Blind",
 	}
