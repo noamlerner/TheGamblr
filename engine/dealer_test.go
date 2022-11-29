@@ -47,7 +47,7 @@ func TestDealer_NewRound(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			players, _ := setupPlayers(test.playersAtSeats)
 
-			dealer := newDealer()
+			dealer := DealerWithDefaultConfig()
 			dealer.board.players = players
 			dealer.newRound()
 
@@ -84,7 +84,7 @@ func TestBoard_NewRound_TwoPlayers(t *testing.T) {
 	twoPlayerIndexes := twoPlayerTest.playersAtSeats
 	players, _ := setupPlayers(twoPlayerIndexes)
 
-	dealer := newDealer()
+	dealer := DealerWithDefaultConfig()
 	dealer.board.players = players
 	dealer.newRound()
 
@@ -106,7 +106,7 @@ func TestDealer_BettingRound_EveryoneCalls(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			players, _ := setupPlayers(test.playersAtSeats)
 
-			dealer := newDealer()
+			dealer := DealerWithDefaultConfig()
 			dealer.board.players = players
 			dealer.newRound()
 
@@ -135,7 +135,7 @@ func TestDealer_BettingRound_OneRaiser(t *testing.T) {
 	for _, test := range append(tests, twoPlayerTest) {
 		t.Run(test.name, func(t *testing.T) {
 			players, _ := setupPlayers(test.playersAtSeats)
-			dealer := newDealer()
+			dealer := DealerWithDefaultConfig()
 			dealer.board.players = players
 			raiserIndex := dealer.board.nextActiveSeat(0)
 			// He raises and min raise will be 10, so everything has to get to 20.
@@ -173,7 +173,7 @@ func TestDealer_BettingRound_RaiseToInfinity(t *testing.T) {
 	for _, test := range append(tests, twoPlayerTest) {
 		t.Run(test.name, func(t *testing.T) {
 			players, _ := setupPlayers(test.playersAtSeats)
-			dealer := newDealer()
+			dealer := DealerWithDefaultConfig()
 			dealer.board.players = players
 
 			raiserIndex := dealer.board.nextActiveSeat(0)
@@ -206,7 +206,7 @@ func TestDealer_BettingRound_Folder(t *testing.T) {
 	for _, test := range append(tests, twoPlayerTest) {
 		t.Run(test.name, func(t *testing.T) {
 			players, _ := setupPlayers(test.playersAtSeats)
-			dealer := newDealer()
+			dealer := DealerWithDefaultConfig()
 			dealer.board.players = players
 
 			folder := dealer.board.playerAtSeat(dealer.board.nextActiveSeat(0))
@@ -248,7 +248,7 @@ func TestDealer_BettingRound_AllFolded(t *testing.T) {
 	for _, test := range append(tests, twoPlayerTest) {
 		t.Run(test.name, func(t *testing.T) {
 			players, _ := setupPlayers(test.playersAtSeats)
-			dealer := newDealer()
+			dealer := DealerWithDefaultConfig()
 			dealer.board.players = players
 
 			for _, i := range test.playersAtSeats {
@@ -277,7 +277,7 @@ func TestDealer_PlayRound_NoOneFolds(t *testing.T) {
 	for _, test := range append(tests, twoPlayerTest) {
 		t.Run(test.name, func(t *testing.T) {
 			players, _ := setupPlayers(test.playersAtSeats)
-			dealer := newDealer()
+			dealer := DealerWithDefaultConfig()
 			dealer.board.players = players
 			winners := dealer.playRound()
 
@@ -298,7 +298,7 @@ func TestDealer_PlayRound_EveryoneFolds(t *testing.T) {
 	for _, test := range append(tests, twoPlayerTest) {
 		t.Run(test.name, func(t *testing.T) {
 			players, _ := setupPlayers(test.playersAtSeats)
-			dealer := newDealer()
+			dealer := DealerWithDefaultConfig()
 			dealer.board.players = players
 			dealer.board.iterateActivePlayers(func(p *playerState) {
 				p.actor.(*OneActionBot).action = FoldAction
@@ -315,7 +315,7 @@ func TestDealer_PlayRound_EveryoneFolds(t *testing.T) {
 }
 
 func TestDealer_CashOutRound_EveryoneElseFolded(t *testing.T) {
-	dealer := newDealer()
+	dealer := DealerWithDefaultConfig()
 	dealer.board.pot = 100
 	winners := []*playerForWinnerCalculations{{
 		p: &playerState{
@@ -634,7 +634,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			dealer := newDealer()
+			dealer := DealerWithDefaultConfig()
 			players := make([]*playerState, len(test.winners))
 			for i, w := range test.winners {
 				dealer.board.pot += w.p.chipsEnteredThisRound

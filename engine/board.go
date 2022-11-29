@@ -7,6 +7,8 @@ type boardState struct {
 	playersInRound int
 	// Counts players that are not folded and are not AllIn
 	actingPlayersInRound int
+	// Counts players left in the game
+	playersInGame int
 }
 
 func newBoardState() *boardState {
@@ -22,7 +24,7 @@ func newBoardState() *boardState {
 func (b *boardState) addCommunityCards(card ...*Card) {
 	b.communityCards = append(b.communityCards, card...)
 	b.iterateActivePlayers(func(p *playerState) {
-		p.actor.SeeActiveBoardState(b.activeState())
+		p.actor.SeeActiveBoardState(b.state())
 	})
 }
 
@@ -130,14 +132,22 @@ func (b *boardState) addToPot(amount int) {
 }
 
 func (b *boardState) iterateActivePlayers(f PlayerStateFunc) {
-	b.players.iterateActive(b.smallBlindButton, f)
+	b.playersInGame = 0
+	b.players.iterateActive(b.smallBlindButton, func(p *playerState) {
+		b.playersInGame++
+		f(p)
+	})
 }
 
 func (b *boardState) iterateActivePlayersFromTo(fromSeat, toSeat int, f PlayerStateFunc) {
-	b.players.iterateActiveUntil(fromSeat, toSeat, f)
+	b.playersInGame = 0
+	b.players.iterateActiveUntil(fromSeat, toSeat, func(p *playerState) {
+		f(p)
+		b.playersInGame = 0
+	})
 }
 
-func (b *boardState) activeState() ActiveBoard {
+func (b *boardState) state() ActiveBoard {
 	b.activeBoard.vPlayers = make([]ActivePlayerState, 8)
 	for i, p := range b.players {
 		b.activeBoard.vPlayers[i] = p.visiblePlayerState()
