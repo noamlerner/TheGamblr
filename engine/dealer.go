@@ -139,6 +139,9 @@ func (d *dealer) whoShowsTheirHand(winners EndRoundPlayers) map[string]*playerFo
 }
 
 func (d *dealer) cashOutRound(winners EndRoundPlayers) {
+	if winners.Len() == 0 {
+		return
+	}
 	if winners.Len() == 1 {
 		// We have a winner!
 		winners[0].winChips(d.board.pot)

@@ -38,13 +38,15 @@ func TestSequence(t *testing.T) {
 
 func TestHardcodedCards(t *testing.T) {
 	numPlayers := 3
-	cards := Cards{
+	hands := []Cards{
 		// hand 0
-		NewCard(Eight, Spades), NewCard(Six, Clubs),
+		{NewCard(Eight, Spades), NewCard(Six, Clubs)},
 		// hand 1
-		NewCard(Queen, Diamonds), NewCard(Ace, Clubs),
+		{NewCard(Queen, Diamonds), NewCard(Ace, Clubs)},
 		// hand 2
-		NewCard(Five, Clubs), NewCard(Six, Spades),
+		{NewCard(Five, Clubs), NewCard(Six, Spades)},
+	}
+	cards := Cards{
 		// community cards
 		NewCard(Ten, Spades), NewCard(Four, Spades), NewCard(Seven, Spades), NewCard(Ace, Hearts), NewCard(Ace, Spades),
 	}
@@ -58,6 +60,6 @@ func TestHardcodedCards(t *testing.T) {
 	}
 	d.board.smallBlindButton = 3
 
-	d.deck = NewHardOrderedDeck(cards)
+	d.deck = NewHardOrderedDeck(hands, numPlayers, cards)
 	d.playRound()
 }

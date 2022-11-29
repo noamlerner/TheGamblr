@@ -25,5 +25,5 @@ func StrToCard(name string) *Card {
 }
 
 func (c *Card) ID() int {
-	return int(c.rank) * int(c.suit)
+	return int(c.suit)*NumRanks + int(c.rank)
 }
