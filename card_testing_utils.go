@@ -1,4 +1,4 @@
-package pokerengine
+package TheGamblr
 
 func GenerateRandHand() []*Card {
 	return NewDeck().Shuffle().NextCards(5)

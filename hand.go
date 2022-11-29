@@ -1,4 +1,4 @@
-package pokerengine
+package TheGamblr
 
 import (
 	"sort"
@@ -136,7 +136,7 @@ func repeatedHandRank(cards []*Card) *Hand {
 	}
 }
 
-// Beats returns true if h is a stronger hand than o
+// Beats returns true if hand is a stronger hand than o
 func (h *Hand) Beats(o *Hand) bool {
 	if h.strength > o.strength {
 		return true
@@ -156,7 +156,7 @@ func (h *Hand) Beats(o *Hand) bool {
 	return false
 }
 
-// Tie returns true if h is the same strength as o
+// Tie returns true if hand is the same strength as o
 func (h *Hand) Tie(o *Hand) bool {
 	if o.strength != h.strength {
 		return false

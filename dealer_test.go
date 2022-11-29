@@ -1,4 +1,4 @@
-package pokerengine
+package TheGamblr
 
 import (
 	"testing"
@@ -12,7 +12,7 @@ type pokerTableTest struct {
 }
 
 var twoPlayerTest = &pokerTableTest{
-	"Two Players",
+	"Two PlayerResults",
 	[]int{3, 6},
 }
 var tests = []*pokerTableTest{
@@ -21,23 +21,23 @@ var tests = []*pokerTableTest{
 		[]int{0, 1, 2, 3, 4, 5, 6, 7},
 	},
 	{
-		"Three Players",
+		"Three PlayerResults",
 		[]int{3, 4, 7},
 	},
 	{
-		"Four Players",
+		"Four PlayerResults",
 		[]int{0, 3, 5, 7},
 	},
 	{
-		"Five Players",
+		"Five PlayerResults",
 		[]int{3, 4, 5, 6, 7},
 	},
 	{
-		"Six Players",
+		"Six PlayerResults",
 		[]int{2, 3, 4, 5, 6, 7},
 	},
 	{
-		"Seven Players",
+		"Seven PlayerResults",
 		[]int{0, 2, 3, 4, 5, 6, 7},
 	},
 }
@@ -287,7 +287,7 @@ func TestDealer_PlayRound_NoOneFolds(t *testing.T) {
 
 			for i := 0; i < winners.Len()-1; i++ {
 				// we should always be better or the same as the next hand
-				assert.True(t, winners[i].h.Beats(winners[i+1].h) || winners[i].h.Tie(winners[i+1].h))
+				assert.True(t, winners[i].hand.Beats(winners[i+1].hand) || winners[i].hand.Tie(winners[i+1].hand))
 				assert.Len(t, winners[i].p.cards, 2)
 			}
 		})
@@ -317,10 +317,13 @@ func TestDealer_PlayRound_EveryoneFolds(t *testing.T) {
 func TestDealer_CashOutRound_EveryoneElseFolded(t *testing.T) {
 	dealer := NewDealer()
 	dealer.board.pot = 100
-	winners := []*HandedBoardPlayer{{
+	winners := []*playerForWinnerCalculations{{
 		p: &BoardPlayer{
-			stack:  100,
-			status: BoardPlayerStatusPlaying},
+			activePlayerState: activePlayerState{
+				stack:  100,
+				status: BoardPlayerStatusPlaying,
+			},
+		},
 	}}
 	dealer.CashOutRound(winners)
 
@@ -328,151 +331,199 @@ func TestDealer_CashOutRound_EveryoneElseFolded(t *testing.T) {
 }
 
 func TestDealer_CashOutRound(t *testing.T) {
-	tests := []struct {
+	var tests = []struct {
 		name        string
-		winners     []*HandedBoardPlayer
+		winners     []*playerForWinnerCalculations
 		stacks      []int
 		carrOverPot int
 	}{
 		{
 			name: "WinningHand",
-			winners: []*HandedBoardPlayer{
+			winners: []*playerForWinnerCalculations{
 				{
-					&BoardPlayer{
-						stack:                 100,
+					p: &BoardPlayer{
+						activePlayerState: activePlayerState{
+							stack: 100,
+
+							status: BoardPlayerStatusPlaying},
 						chipsEnteredThisRound: 40,
-						status:                BoardPlayerStatusPlaying},
-					NewHand(GenerateFlush(Ace)),
+					},
+					hand: NewHand(GenerateFlush(Ace)),
 				},
 				{
-					&BoardPlayer{
-						stack:                 100,
+					p: &BoardPlayer{
+						activePlayerState: activePlayerState{
+							stack:  100,
+							status: BoardPlayerStatusPlaying,
+						},
 						chipsEnteredThisRound: 40,
-						status:                BoardPlayerStatusPlaying},
-					NewHand(GenerateStraightTo(Ace)),
+					},
+					hand: NewHand(GenerateStraightTo(Ace)),
 				},
 				{
-					&BoardPlayer{
-						stack:                 100,
+					p: &BoardPlayer{
+						activePlayerState: activePlayerState{
+							stack:  100,
+							status: BoardPlayerStatusPlaying,
+						},
+
 						chipsEnteredThisRound: 40,
-						status:                BoardPlayerStatusPlaying},
-					NewHand(GenerateHighCard(Ace)),
+					},
+					hand: NewHand(GenerateHighCard(Ace)),
 				},
 			},
 			stacks: []int{220, 100, 100},
 		},
 		{
 			name: "WinningHand_AllIn",
-			winners: []*HandedBoardPlayer{
+			winners: []*playerForWinnerCalculations{
 				{
-					&BoardPlayer{
-						stack:                 0,
+					p: &BoardPlayer{
+						activePlayerState: activePlayerState{
+							stack:  0,
+							id:     "1",
+							status: BoardPlayerStatusAllIn,
+						},
 						chipsEnteredThisRound: 20,
-						id:                    "1",
-						status:                BoardPlayerStatusAllIn},
-					NewHand(GenerateFlush(Ace)),
+					},
+					hand: NewHand(GenerateFlush(Ace)),
 				},
 				{
-					&BoardPlayer{
-						id:                    "2",
-						stack:                 100,
-						chipsEnteredThisRound: 40,
-						status:                BoardPlayerStatusPlaying},
-					NewHand(GenerateStraightTo(Ace)),
+					p: &BoardPlayer{
+						activePlayerState: activePlayerState{
+							id:     "2",
+							status: BoardPlayerStatusPlaying,
+							stack:  100,
+						},
+						chipsEnteredThisRound: 40},
+					hand: NewHand(GenerateStraightTo(Ace)),
 				},
 				{
-					&BoardPlayer{
-						id:                    "3",
-						stack:                 100,
+					p: &BoardPlayer{
+						activePlayerState: activePlayerState{
+							id:     "3",
+							stack:  100,
+							status: BoardPlayerStatusPlaying,
+						},
+
 						chipsEnteredThisRound: 10,
-						status:                BoardPlayerStatusPlaying},
-					NewHand(GenerateHighCard(Ace)),
+					},
+					hand: NewHand(GenerateHighCard(Ace)),
 				},
 
 				{
-					&BoardPlayer{
-						id:                    "4",
-						stack:                 100,
+					p: &BoardPlayer{
+						activePlayerState: activePlayerState{
+							id:     "4",
+							stack:  100,
+							status: BoardPlayerStatusPlaying,
+						},
 						chipsEnteredThisRound: 40,
-						status:                BoardPlayerStatusPlaying},
-					NewHand(GenerateHighCard(King)),
+					},
+					hand: NewHand(GenerateHighCard(King)),
 				},
 			},
 			stacks: []int{70, 140, 100, 100},
 		},
 		{
 			name: "SplitPot_TwoWay",
-			winners: []*HandedBoardPlayer{
+			winners: []*playerForWinnerCalculations{
 				{
-					&BoardPlayer{
-						id:                    "1",
-						stack:                 100,
+					p: &BoardPlayer{
+						activePlayerState: activePlayerState{
+							id:     "1",
+							stack:  100,
+							status: BoardPlayerStatusPlaying,
+						},
 						chipsEnteredThisRound: 40,
-						status:                BoardPlayerStatusPlaying},
-					NewHand(GenerateStraightTo(Ace)),
+					},
+					hand: NewHand(GenerateStraightTo(Ace)),
 				},
 				{
-					&BoardPlayer{
-						id:                    "2",
-						stack:                 100,
+					p: &BoardPlayer{
+						activePlayerState: activePlayerState{
+							id:     "2",
+							stack:  100,
+							status: BoardPlayerStatusPlaying,
+						},
 						chipsEnteredThisRound: 40,
-						status:                BoardPlayerStatusPlaying},
-					NewHand(GenerateStraightTo(Ace)),
+					},
+					hand: NewHand(GenerateStraightTo(Ace)),
 				},
 				{
-					&BoardPlayer{
-						stack:                 100,
-						id:                    "3",
+					p: &BoardPlayer{
+						activePlayerState: activePlayerState{
+							stack:  100,
+							id:     "3",
+							status: BoardPlayerStatusPlaying,
+						},
 						chipsEnteredThisRound: 10,
-						status:                BoardPlayerStatusPlaying},
-					NewHand(GenerateHighCard(Ace)),
+					},
+					hand: NewHand(GenerateHighCard(Ace)),
 				},
 
 				{
-					&BoardPlayer{
-						stack:                 100,
-						id:                    "4",
+					p: &BoardPlayer{
+						activePlayerState: activePlayerState{
+							stack:  100,
+							id:     "4",
+							status: BoardPlayerStatusPlaying,
+						},
+
 						chipsEnteredThisRound: 40,
-						status:                BoardPlayerStatusPlaying},
-					NewHand(GenerateHighCard(King)),
+					},
+					hand: NewHand(GenerateHighCard(King)),
 				},
 			},
 			stacks: []int{165, 165, 100, 100},
 		},
 		{
 			name: "SplitPot_ThreeWay",
-			winners: []*HandedBoardPlayer{
+			winners: []*playerForWinnerCalculations{
 				{
-					&BoardPlayer{
-						id:                    "1",
-						stack:                 100,
+					p: &BoardPlayer{
+						activePlayerState: activePlayerState{
+							id:    "1",
+							stack: 100,
+
+							status: BoardPlayerStatusPlaying,
+						},
 						chipsEnteredThisRound: 40,
-						status:                BoardPlayerStatusPlaying},
-					NewHand(GenerateStraightTo(Ace)),
+					},
+					hand: NewHand(GenerateStraightTo(Ace)),
 				},
 				{
-					&BoardPlayer{
-						id:                    "2",
-						stack:                 100,
+					p: &BoardPlayer{
+						activePlayerState: activePlayerState{
+							id:     "2",
+							stack:  100,
+							status: BoardPlayerStatusPlaying,
+						},
 						chipsEnteredThisRound: 40,
-						status:                BoardPlayerStatusPlaying},
-					NewHand(GenerateStraightTo(Ace)),
+					},
+					hand: NewHand(GenerateStraightTo(Ace)),
 				},
 				{
-					&BoardPlayer{
-						stack:                 100,
-						id:                    "3",
+					p: &BoardPlayer{
+						activePlayerState: activePlayerState{
+							stack:  100,
+							id:     "3",
+							status: BoardPlayerStatusPlaying,
+						},
 						chipsEnteredThisRound: 40,
-						status:                BoardPlayerStatusPlaying},
-					NewHand(GenerateStraightTo(Ace)),
+					},
+					hand: NewHand(GenerateStraightTo(Ace)),
 				},
 				{
-					&BoardPlayer{
-						stack:                 100,
-						id:                    "4",
+					p: &BoardPlayer{
+						activePlayerState: activePlayerState{
+							stack:  100,
+							id:     "4",
+							status: BoardPlayerStatusPlaying,
+						},
 						chipsEnteredThisRound: 40,
-						status:                BoardPlayerStatusPlaying},
-					NewHand(GenerateHighCard(King)),
+					},
+					hand: NewHand(GenerateHighCard(King)),
 				},
 			},
 			stacks:      []int{153, 153, 153, 100},
@@ -480,78 +531,101 @@ func TestDealer_CashOutRound(t *testing.T) {
 		},
 		{
 			name: "SplitPot_Threeway_OneAllIn",
-			winners: []*HandedBoardPlayer{
+			winners: []*playerForWinnerCalculations{
 				{
-					&BoardPlayer{
-						id:                    "1",
-						stack:                 0,
-						chipsEnteredThisRound: 30,
-						status:                BoardPlayerStatusAllIn},
-					NewHand(GenerateStraightTo(Ace)),
+					p: &BoardPlayer{
+						activePlayerState: activePlayerState{
+							id:     "1",
+							stack:  0,
+							status: BoardPlayerStatusAllIn,
+						},
+						chipsEnteredThisRound: 30},
+					hand: NewHand(GenerateStraightTo(Ace)),
 				},
 				{
-					&BoardPlayer{
-						id:                    "2",
-						stack:                 100,
-						chipsEnteredThisRound: 60,
-						status:                BoardPlayerStatusPlaying},
-					NewHand(GenerateStraightTo(Ace)),
+					p: &BoardPlayer{
+						activePlayerState: activePlayerState{
+							id:     "2",
+							stack:  100,
+							status: BoardPlayerStatusPlaying,
+						},
+						chipsEnteredThisRound: 60},
+					hand: NewHand(GenerateStraightTo(Ace)),
 				},
 				{
-					&BoardPlayer{
-						stack:                 100,
-						id:                    "3",
+					p: &BoardPlayer{
+						activePlayerState: activePlayerState{
+							stack: 100,
+							id:    "3",
+
+							status: BoardPlayerStatusPlaying,
+						},
 						chipsEnteredThisRound: 60,
-						status:                BoardPlayerStatusPlaying},
-					NewHand(GenerateStraightTo(Ace)),
+					},
+					hand: NewHand(GenerateStraightTo(Ace)),
 				},
 
 				{
-					&BoardPlayer{
-						stack:                 100,
-						id:                    "4",
+					p: &BoardPlayer{
+						activePlayerState: activePlayerState{
+							stack:  100,
+							id:     "4",
+							status: BoardPlayerStatusPlaying,
+						},
 						chipsEnteredThisRound: 60,
-						status:                BoardPlayerStatusPlaying},
-					NewHand(GenerateHighCard(King)),
+					},
+					hand: NewHand(GenerateHighCard(King)),
 				},
 			},
 			stacks:      []int{40, 185, 185, 100},
 			carrOverPot: 0,
 		}, {
 			name: "SplitPot_Then_Split_Pot",
-			winners: []*HandedBoardPlayer{
+			winners: []*playerForWinnerCalculations{
 				{
-					&BoardPlayer{
-						id:                    "1",
-						stack:                 0,
+					p: &BoardPlayer{
+						activePlayerState: activePlayerState{
+							id:     "1",
+							stack:  0,
+							status: BoardPlayerStatusAllIn,
+						},
 						chipsEnteredThisRound: 30,
-						status:                BoardPlayerStatusAllIn},
-					NewHand(GenerateStraightTo(Ace)),
+					},
+					hand: NewHand(GenerateStraightTo(Ace)),
 				},
 				{
-					&BoardPlayer{
-						id:                    "2",
-						stack:                 0,
+					p: &BoardPlayer{
+						activePlayerState: activePlayerState{
+							id:     "2",
+							stack:  0,
+							status: BoardPlayerStatusPlaying,
+						},
 						chipsEnteredThisRound: 30,
-						status:                BoardPlayerStatusPlaying},
-					NewHand(GenerateStraightTo(Ace)),
+					},
+					hand: NewHand(GenerateStraightTo(Ace)),
 				},
 				{
-					&BoardPlayer{
-						stack:                 100,
-						id:                    "3",
+					p: &BoardPlayer{
+						activePlayerState: activePlayerState{
+							stack:  100,
+							id:     "3",
+							status: BoardPlayerStatusPlaying,
+						},
 						chipsEnteredThisRound: 60,
-						status:                BoardPlayerStatusPlaying},
-					NewHand(GenerateStraightTo(Six)),
+					},
+					hand: NewHand(GenerateStraightTo(Six)),
 				},
 
 				{
-					&BoardPlayer{
-						stack:                 100,
-						id:                    "4",
+					p: &BoardPlayer{
+						activePlayerState: activePlayerState{
+							stack:  100,
+							id:     "4",
+							status: BoardPlayerStatusPlaying,
+						},
 						chipsEnteredThisRound: 60,
-						status:                BoardPlayerStatusPlaying},
-					NewHand(GenerateHighCard(Six)),
+					},
+					hand: NewHand(GenerateHighCard(Six)),
 				},
 			},
 			stacks:      []int{60, 60, 130, 130},

@@ -1,4 +1,4 @@
-package pokerengine
+package TheGamblr
 
 import "math"
 
