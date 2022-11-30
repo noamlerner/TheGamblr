@@ -14,6 +14,14 @@ type BoardState interface {
 	Players() []PlayerState
 }
 
+func TestBoardState() BoardState {
+	return &visibleBoardState{
+		pot:              420,
+		stage:            PreFlop,
+		smallBlindButton: 2,
+	}
+}
+
 // visibleBoardState is the board that all players can see during and at the start of a round.
 type visibleBoardState struct {
 	communityCards   []*Card

@@ -27,7 +27,7 @@ message PlayerState {
   // An enum representing the Players Status.
   PlayerStatus status = 2;
   // The players position at the table.
-  uint32 seat_number = 3;
+  int32 seat_number = 3;
   // An ID provided by the player upon game registration.
   string id = 4;
   // This will be Null unless a round has just complete or if this player mucked. Otherwise, this will provide info

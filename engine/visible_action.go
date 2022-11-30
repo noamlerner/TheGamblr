@@ -27,6 +27,9 @@ func (v *visibleAction) Type() ActionType {
 }
 
 func (v *visibleAction) Player() PlayerState {
+	if v.player == nil {
+		return NilPlayerState()
+	}
 	return v.player
 }
 

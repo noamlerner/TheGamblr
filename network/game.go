@@ -23,9 +23,7 @@ func newGame(config *engine.GameConfig) *game {
 
 func (g *game) seatPlayer(id string) (string, int) {
 	token := uuid.Must(uuid.NewRandom()).String()
-	grpcBot := &grpcBot{
-		token: token,
-	}
+	grpcBot := newGrpcBot()
 	seatNumber := g.dealer.SeatPlayer(id, grpcBot)
 	g.players[token] = grpcBot
 	return token, seatNumber

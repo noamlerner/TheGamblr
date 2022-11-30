@@ -44,7 +44,7 @@ func (c *_protoConv) Player(p engine.PlayerState) *proto.PlayerState {
 	return &proto.PlayerState{
 		Stack:        uint64(p.Stack()),
 		Status:       proto.PlayerStatus(p.Status()),
-		SeatNumber:   uint32(p.SeatNumber()),
+		SeatNumber:   int32(p.SeatNumber()),
 		Id:           p.Id(),
 		RoundResults: c.RoundResults(p.RoundEndStats()),
 	}
@@ -59,6 +59,9 @@ func (c *_protoConv) Players(players []engine.PlayerState) []*proto.PlayerState 
 }
 
 func (c *_protoConv) RoundResults(p engine.PlayerRoundResults) *proto.PlayerRoundResults {
+	if p == nil {
+		return nil
+	}
 	return &proto.PlayerRoundResults{
 		ChipsWon:     uint64(p.ChipsWon()),
 		Cards:        c.Cards(p.Cards()),
