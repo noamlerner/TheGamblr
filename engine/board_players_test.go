@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -136,13 +135,13 @@ func isBetween(first, last, check int) bool {
 	}
 }
 
-func setupPlayers(playersAtSeats []int) (PlayerStates, map[int]bool) {
-	players := make(PlayerStates, 8)
+func setupPlayers(playersAtSeats []int) (playerStates, map[int]bool) {
+	players := make(playerStates, 8)
 	seen := map[int]bool{}
 	for _, seat := range playersAtSeats {
 		players[seat] = &playerState{
-			activePlayerState: activePlayerState{
-				id:         strconv.Itoa(seat),
+			visiblePlayerState: visiblePlayerState{
+				id:         names[seat],
 				stack:      100,
 				seatNumber: seat,
 				status:     PlayerStatusPlaying,

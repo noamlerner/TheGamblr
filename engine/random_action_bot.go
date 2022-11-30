@@ -15,16 +15,13 @@ type randomActionBot struct {
 	rand *rand.Rand
 }
 
-func (c *randomActionBot) RoundResults(results RoundResults) {
+func (c *randomActionBot) ReceiveCards(hand Cards, blind int, boardState BoardState) {
 }
 
-func (c *randomActionBot) ReceiveCards(hand Cards, blind int, boardState ActiveBoard) {
+func (c *randomActionBot) SeeBoardState(boardState BoardState) {
 }
 
-func (c *randomActionBot) SeeActiveBoardState(boardState ActiveBoard) {
-}
-
-func (c *randomActionBot) Act() (Action, int) {
+func (c *randomActionBot) Act() (ActionType, int) {
 	f := c.rand.Float64()
 	switch {
 	case f < 0.5:
@@ -37,5 +34,5 @@ func (c *randomActionBot) Act() (Action, int) {
 	return CheckFoldAction, 0
 }
 
-func (c *randomActionBot) ReceiveUpdate(action VisibleAction) {
+func (c *randomActionBot) ActionUpdate(action Action) {
 }

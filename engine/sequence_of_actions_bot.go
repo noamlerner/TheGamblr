@@ -1,20 +1,19 @@
 package engine
 
 type SequenceOfActionsBot struct {
-	actions []Action
-	i       int
+	actions   []ActionType
+	i         int
+	numCalled int
 }
 
-func (c *SequenceOfActionsBot) RoundResults(results RoundResults) {
+func (c *SequenceOfActionsBot) ReceiveCards(hand Cards, blind int, boardState BoardState) {
 }
 
-func (c *SequenceOfActionsBot) ReceiveCards(hand Cards, blind int, boardState ActiveBoard) {
+func (c *SequenceOfActionsBot) SeeBoardState(boardState BoardState) {
 }
 
-func (c *SequenceOfActionsBot) SeeActiveBoardState(boardState ActiveBoard) {
-}
-
-func (c *SequenceOfActionsBot) Act() (Action, int) {
+func (c *SequenceOfActionsBot) Act() (ActionType, int) {
+	c.numCalled++
 	i := c.i
 	c.i++
 	if i >= len(c.actions) {
@@ -23,5 +22,5 @@ func (c *SequenceOfActionsBot) Act() (Action, int) {
 	return c.actions[i], 10
 }
 
-func (c *SequenceOfActionsBot) ReceiveUpdate(action VisibleAction) {
+func (c *SequenceOfActionsBot) ActionUpdate(action Action) {
 }

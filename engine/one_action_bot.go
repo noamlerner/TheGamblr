@@ -1,25 +1,22 @@
 package engine
 
 type OneActionBot struct {
-	action     Action
+	action     ActionType
 	numCalled  int
-	boardState ActiveBoard
+	boardState BoardState
 }
 
-func (c *OneActionBot) RoundResults(results RoundResults) {
-}
-
-func (c *OneActionBot) ReceiveCards(hand Cards, blind int, boardState ActiveBoard) {
+func (c *OneActionBot) ReceiveCards(hand Cards, blind int, boardState BoardState) {
 	c.boardState = boardState
 }
 
-func (c *OneActionBot) SeeActiveBoardState(boardState ActiveBoard) {
+func (c *OneActionBot) SeeBoardState(boardState BoardState) {
 }
 
-func (c *OneActionBot) Act() (Action, int) {
+func (c *OneActionBot) Act() (ActionType, int) {
 	c.numCalled++
 	return c.action, 10
 }
 
-func (c *OneActionBot) ReceiveUpdate(action VisibleAction) {
+func (c *OneActionBot) ActionUpdate(action Action) {
 }

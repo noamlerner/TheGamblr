@@ -5,7 +5,7 @@ import "fmt"
 const (
 	twoStringFormatStatement             = "%s %s\n"
 	cardsLogStatement                    = "%s received %s\n"
-	actionLogStatement                   = "%s %s %v\n"                               // PlayerID Action Amount
+	actionLogStatement                   = "%s %s %v\n"                               // PlayerID ActionType Amount
 	boardLogStatement                    = "%s: \n\tCommunityCards: %s, \n\tPot %v\n" // Stage: CommunityCards: Cards, Pot:amount
 	chipCountLogStatement                = "Stack Sizes: "
 	playerChipCountLogStatement          = "\t%s - %v\n"
@@ -27,38 +27,44 @@ func (l *logger) Cards(p *playerState) {
 	}
 	fmt.Printf(cardsLogStatement, p.id, p.cards.String())
 }
-func (l *logger) Action(a VisibleAction) {
+func (l *logger) Action(a Action) {
 	if l.logLevel < LogLevelActions {
 		return
 	}
 
-	if a.ActionTaken() == CheckFoldAction || a.ActionTaken() == FoldAction {
-		fmt.Printf(twoStringFormatStatement, a.Player().Id(), a.ActionTaken().ActionVerb())
+	if a.Type() == CheckFoldAction || a.Type() == FoldAction {
+		fmt.Printf(twoStringFormatStatement, a.Player().Id(), a.Type().ActionVerb())
 		return
 	}
 
-	fmt.Printf(actionLogStatement, a.Player().Id(), a.ActionTaken().ActionVerb(), a.Amount())
+	fmt.Printf(actionLogStatement, a.Player().Id(), a.Type().ActionVerb(), a.Amount())
 }
 
-func (l *logger) Stage(board ActiveBoard) {
+func (l *logger) Stage(board BoardState) {
 	if l.logLevel < LogLevelStages {
 		return
 	}
 	fmt.Printf(boardLogStatement, board.Stage().Name(), board.CommunityCards().String(), board.Pot())
 }
 
-func (l *logger) Winners(board RoundResults) {
+func (l *logger) Winners(board BoardState) {
 	if l.logLevel < LogLevelWinners {
 		return
 	}
-	for _, p := range board.PlayerResults() {
-		if len(p.Cards()) > 0 {
-			fmt.Printf(winnersLogStatement, p.Id(), p.ChipsWon(), p.Cards().String(), p.HandStrength().String())
+	for _, p := range board.Players() {
+		if p == nil {
+			continue
+		}
+		if len(p.RoundEndStats().Cards()) > 0 {
+			fmt.Printf(winnersLogStatement, p.Id(), p.RoundEndStats().ChipsWon(), p.RoundEndStats().Cards().String(), p.RoundEndStats().HandStrength().String())
 		}
 	}
 
 	fmt.Println(chipCountLogStatement)
-	for _, p := range board.PlayerResults() {
+	for _, p := range board.Players() {
+		if p == nil {
+			continue
+		}
 		fmt.Printf(playerChipCountLogStatement, p.Id(), p.Stack())
 	}
 }

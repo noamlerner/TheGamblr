@@ -1,10 +1,20 @@
 package engine
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Card struct {
 	rank Rank
 	suit Suit
+}
+
+func (c *Card) Rank() Rank {
+	return c.rank
+}
+
+func (c *Card) Suit() Suit {
+	return c.suit
 }
 
 const cardNameFormat = "%s of %s"

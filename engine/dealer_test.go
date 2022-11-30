@@ -136,6 +136,7 @@ func TestDealer_BettingRound_OneRaiser(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			players, _ := setupPlayers(test.playersAtSeats)
 			dealer := DealerWithDefaultConfig()
+			dealer.log.logLevel = LogLevelCards
 			dealer.board.players = players
 			raiserIndex := dealer.board.nextActiveSeat(0)
 			// He raises and min raise will be 10, so everything has to get to 20.
@@ -281,7 +282,7 @@ func TestDealer_PlayRound_NoOneFolds(t *testing.T) {
 			dealer.board.players = players
 			winners := dealer.playRound()
 
-			assert.Equal(t, River, dealer.board.stage)
+			assert.Equal(t, RoundOver, dealer.board.stage)
 			assert.Len(t, dealer.board.communityCards, 5)
 			assert.NotNil(t, winners)
 
@@ -306,7 +307,7 @@ func TestDealer_PlayRound_EveryoneFolds(t *testing.T) {
 
 			winners := dealer.playRound()
 
-			assert.Equal(t, PreFlop, dealer.board.stage)
+			assert.Equal(t, RoundOver, dealer.board.stage)
 			assert.Len(t, dealer.board.communityCards, 0)
 			assert.NotNil(t, winners)
 			assert.Len(t, winners, 1)
@@ -319,7 +320,7 @@ func TestDealer_CashOutRound_EveryoneElseFolded(t *testing.T) {
 	dealer.board.pot = 100
 	winners := []*playerForWinnerCalculations{{
 		p: &playerState{
-			activePlayerState: activePlayerState{
+			visiblePlayerState: visiblePlayerState{
 				stack:  100,
 				status: PlayerStatusPlaying,
 			},
@@ -342,7 +343,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 			winners: []*playerForWinnerCalculations{
 				{
 					p: &playerState{
-						activePlayerState: activePlayerState{
+						visiblePlayerState: visiblePlayerState{
 							stack: 100,
 
 							status: PlayerStatusPlaying},
@@ -352,7 +353,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 				},
 				{
 					p: &playerState{
-						activePlayerState: activePlayerState{
+						visiblePlayerState: visiblePlayerState{
 							stack:  100,
 							status: PlayerStatusPlaying,
 						},
@@ -362,7 +363,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 				},
 				{
 					p: &playerState{
-						activePlayerState: activePlayerState{
+						visiblePlayerState: visiblePlayerState{
 							stack:  100,
 							status: PlayerStatusPlaying,
 						},
@@ -379,7 +380,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 			winners: []*playerForWinnerCalculations{
 				{
 					p: &playerState{
-						activePlayerState: activePlayerState{
+						visiblePlayerState: visiblePlayerState{
 							stack:  0,
 							id:     "1",
 							status: PlayerStatusAllIn,
@@ -390,7 +391,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 				},
 				{
 					p: &playerState{
-						activePlayerState: activePlayerState{
+						visiblePlayerState: visiblePlayerState{
 							id:     "2",
 							status: PlayerStatusPlaying,
 							stack:  100,
@@ -400,7 +401,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 				},
 				{
 					p: &playerState{
-						activePlayerState: activePlayerState{
+						visiblePlayerState: visiblePlayerState{
 							id:     "3",
 							stack:  100,
 							status: PlayerStatusPlaying,
@@ -413,7 +414,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 
 				{
 					p: &playerState{
-						activePlayerState: activePlayerState{
+						visiblePlayerState: visiblePlayerState{
 							id:     "4",
 							stack:  100,
 							status: PlayerStatusPlaying,
@@ -430,7 +431,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 			winners: []*playerForWinnerCalculations{
 				{
 					p: &playerState{
-						activePlayerState: activePlayerState{
+						visiblePlayerState: visiblePlayerState{
 							id:     "1",
 							stack:  100,
 							status: PlayerStatusPlaying,
@@ -441,7 +442,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 				},
 				{
 					p: &playerState{
-						activePlayerState: activePlayerState{
+						visiblePlayerState: visiblePlayerState{
 							id:     "2",
 							stack:  100,
 							status: PlayerStatusPlaying,
@@ -452,7 +453,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 				},
 				{
 					p: &playerState{
-						activePlayerState: activePlayerState{
+						visiblePlayerState: visiblePlayerState{
 							stack:  100,
 							id:     "3",
 							status: PlayerStatusPlaying,
@@ -464,7 +465,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 
 				{
 					p: &playerState{
-						activePlayerState: activePlayerState{
+						visiblePlayerState: visiblePlayerState{
 							stack:  100,
 							id:     "4",
 							status: PlayerStatusPlaying,
@@ -482,7 +483,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 			winners: []*playerForWinnerCalculations{
 				{
 					p: &playerState{
-						activePlayerState: activePlayerState{
+						visiblePlayerState: visiblePlayerState{
 							id:    "1",
 							stack: 100,
 
@@ -494,7 +495,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 				},
 				{
 					p: &playerState{
-						activePlayerState: activePlayerState{
+						visiblePlayerState: visiblePlayerState{
 							id:     "2",
 							stack:  100,
 							status: PlayerStatusPlaying,
@@ -505,7 +506,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 				},
 				{
 					p: &playerState{
-						activePlayerState: activePlayerState{
+						visiblePlayerState: visiblePlayerState{
 							stack:  100,
 							id:     "3",
 							status: PlayerStatusPlaying,
@@ -516,7 +517,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 				},
 				{
 					p: &playerState{
-						activePlayerState: activePlayerState{
+						visiblePlayerState: visiblePlayerState{
 							stack:  100,
 							id:     "4",
 							status: PlayerStatusPlaying,
@@ -534,7 +535,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 			winners: []*playerForWinnerCalculations{
 				{
 					p: &playerState{
-						activePlayerState: activePlayerState{
+						visiblePlayerState: visiblePlayerState{
 							id:     "1",
 							stack:  0,
 							status: PlayerStatusAllIn,
@@ -544,7 +545,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 				},
 				{
 					p: &playerState{
-						activePlayerState: activePlayerState{
+						visiblePlayerState: visiblePlayerState{
 							id:     "2",
 							stack:  100,
 							status: PlayerStatusPlaying,
@@ -554,7 +555,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 				},
 				{
 					p: &playerState{
-						activePlayerState: activePlayerState{
+						visiblePlayerState: visiblePlayerState{
 							stack: 100,
 							id:    "3",
 
@@ -567,7 +568,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 
 				{
 					p: &playerState{
-						activePlayerState: activePlayerState{
+						visiblePlayerState: visiblePlayerState{
 							stack:  100,
 							id:     "4",
 							status: PlayerStatusPlaying,
@@ -584,7 +585,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 			winners: []*playerForWinnerCalculations{
 				{
 					p: &playerState{
-						activePlayerState: activePlayerState{
+						visiblePlayerState: visiblePlayerState{
 							id:     "1",
 							stack:  0,
 							status: PlayerStatusAllIn,
@@ -595,7 +596,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 				},
 				{
 					p: &playerState{
-						activePlayerState: activePlayerState{
+						visiblePlayerState: visiblePlayerState{
 							id:     "2",
 							stack:  0,
 							status: PlayerStatusPlaying,
@@ -606,7 +607,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 				},
 				{
 					p: &playerState{
-						activePlayerState: activePlayerState{
+						visiblePlayerState: visiblePlayerState{
 							stack:  100,
 							id:     "3",
 							status: PlayerStatusPlaying,
@@ -618,7 +619,7 @@ func TestDealer_CashOutRound(t *testing.T) {
 
 				{
 					p: &playerState{
-						activePlayerState: activePlayerState{
+						visiblePlayerState: visiblePlayerState{
 							stack:  100,
 							id:     "4",
 							status: PlayerStatusPlaying,

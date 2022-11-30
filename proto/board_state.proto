@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package thegamblr;
+option go_package = "thegamblr/proto";
+
+import "card.proto";
+import "stage.proto";
+import "player_state.proto";
+
+message BoardState {
+  // CommunityCards represent the card available to everyone on the board. They will always be ordered -
+  // Cards 0, 1 and 2 will be the flop. Card 3 will be the Turn and card 4 will be the River.
+  repeated Card community_cards = 1;
+  // Provides info: How much money is in the pot.
+  uint64 pot = 2;
+  // Enum representing what stage the current round is in.
+  Stage stage = 3;
+  // An index representing where the small blind button is. The small blind button is the index of the player that pays
+  // the small blind and the one that is first to act on the Flop, Turn and River.
+  uint32 smallBlindButton = 4;
+  // An ordered list of up to 8 players. Some entries may be nil if a seat is empty.
+  repeated PlayerState players = 5;
+}

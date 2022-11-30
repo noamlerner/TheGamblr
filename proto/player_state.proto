@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package thegamblr;
+option go_package = "thegamblr/proto";
+
+import "card.proto";
+
+enum PlayerStatus {
+  OUT = 0;
+  FOLDED = 1;
+  PLAYING = 2;
+  ALL_IN = 3;
+}
+
+message PlayerRoundResults {
+  // How many chips did a player win this round?
+  uint64 chips_won = 1;
+  // What cards did a player hold (may be null if the player mucked).
+  repeated Card cards = 2;
+  // What did their hand make (only available if cards is available).
+  HandStrength hand_strength = 3;
+}
+
+message PlayerState {
+  // Information representing how much money this player has to bet with.
+  uint64 stack = 1;
+  // An enum representing the Players Status.
+  PlayerStatus status = 2;
+  // The players position at the table.
+  uint32 seat_number = 3;
+  // An ID provided by the player upon game registration.
+  string id = 4;
+  // This will be Null unless a round has just complete or if this player mucked. Otherwise, this will provide info
+  // like how much money this player won and what cards they were playing with.
+  PlayerRoundResults round_results = 5;
+}

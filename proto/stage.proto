@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package thegamblr;
+option go_package = "thegamblr/proto";
+
+enum Stage {
+  PRE_FLOP = 0;
+  FLOP = 1;
+  TURN = 2;
+  RIVER = 3;
+  ROUND_COMPLETE = 4;
+}

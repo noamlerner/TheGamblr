@@ -27,7 +27,7 @@ func TestReceiveCards(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			player := &playerState{
-				activePlayerState: activePlayerState{
+				visiblePlayerState: visiblePlayerState{
 					stack:  100,
 					status: PlayerStatusPlaying,
 				},
