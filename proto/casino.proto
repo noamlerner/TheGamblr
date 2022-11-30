@@ -36,14 +36,14 @@ message ActRequest {
 
 message ActResponse {}
 
-message JoniGameRequest{
+message JoinGameRequest{
   // Give your player a name.
   string player_id = 1;
   // What game are you joining?
   string game_id = 2;
 }
 
-message JoniGameResponse {
+message JoinGameResponse {
   // Keep this token for future requests.
   string token = 1;
   // This is the seat you have been placed it.
@@ -67,6 +67,13 @@ message CreateGameResponse {
   string game_id = 1;
 }
 
+message StartGameRequest {
+  // token must belong to the person who created the game
+  string token = 2;
+}
+message StartGameResponse {
+}
+
 service Casino {
   // CreateGame creates a game that players can join. The response returns a game_id which is needed by players
   // to register.
@@ -75,7 +82,9 @@ service Casino {
   // In the response object, the player will receive a player_id which should match unless it was taken, in which case
   // it will have a number appended to it. The response also provides the players seat number and a token. The token
   // is necessary to pass up in Action requests to verify who is performing the action.
-  rpc JoinGame(JoniGameRequest) returns (JoniGameResponse);
+  rpc JoinGame(JoinGameRequest) returns (JoinGameResponse);
+  // StartGame start the game!
+  rpc StartGame(StartGameRequest) returns (StartGameResponse);
   // ReceiveUpdates will return a list of Actions that have occurred since the last time this was called. This should
   // be constantly polled. It will also return a bool indicating if it is this player's turn. If it is, a call to Act
   // is expected.
