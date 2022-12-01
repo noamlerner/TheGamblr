@@ -28,22 +28,38 @@ func NewDealer(config *GameConfig) *Dealer {
 }
 
 func (d *Dealer) RunGame() BoardState {
+
 	if d.gameConfig.NumRounds == -1 {
+		roundNum := 0
 		for d.board.playersInGame > 1 {
+			d.log.Round(roundNum)
+			d.playRound()
+			roundNum++
+		}
+
+	} else {
+		for i := 0; i < d.gameConfig.NumRounds && d.board.playersInGame > 1; i++ {
+			d.log.Round(i)
 			d.playRound()
 		}
-		return d.board.state()
 	}
 
-	for i := 0; i < d.gameConfig.NumRounds; i++ {
-		d.playRound()
-	}
-	return d.board.state()
+	state := d.board.state()
+	state.(*visibleBoardState).stage = GameOver
+	d.board.iterateActivePlayers(func(p *playerState) {
+		p.actor.SeeBoardState(state)
+	})
+	return state
 }
 
 // SeatPlayer return the seat number
 func (d *Dealer) SeatPlayer(id string, player BotPlayer) int {
+	d.board.playersInGame++
 	return d.board.seatPlayer(id, player, d.gameConfig.StartingStack)
+}
+
+func (d *Dealer) GameConfig() *GameConfig {
+	return d.gameConfig
 }
 
 func (d *Dealer) playRound() EndRoundPlayers {
@@ -248,6 +264,9 @@ func (d *Dealer) newRound() {
 	d.board.newRound()
 	boardState := d.board.state()
 	d.board.iterateActivePlayers(func(p *playerState) {
+		p.actor.SeeBoardState(boardState)
+	})
+	d.board.iterateActivePlayers(func(p *playerState) {
 		if p.Status() != PlayerStatusPlaying {
 			return
 		}
@@ -255,15 +274,15 @@ func (d *Dealer) newRound() {
 		switch onPlayer {
 		case 0:
 			// SmallBlind
-			addedToPot = p.receiveCards(d.deck.NextCards(2), d.gameConfig.SmallBlind, boardState)
+			addedToPot = p.receiveCards(d.deck.NextCards(2), d.gameConfig.SmallBlind)
 			d.announceAction(p, SmallBlind, d.gameConfig.SmallBlind)
 			d.lastToRaise = p
 		case 1:
 			// big blind
-			addedToPot = p.receiveCards(d.deck.NextCards(2), d.gameConfig.SmallBlind*2, boardState)
+			addedToPot = p.receiveCards(d.deck.NextCards(2), d.gameConfig.SmallBlind*2)
 			d.announceAction(p, BigBlind, d.gameConfig.SmallBlind*2)
 		default:
-			addedToPot = p.receiveCards(d.deck.NextCards(2), 0, boardState)
+			addedToPot = p.receiveCards(d.deck.NextCards(2), 0)
 		}
 		onPlayer++
 		d.log.Cards(p)
@@ -334,7 +353,7 @@ func (d *Dealer) betting() {
 				// We also skip everyone if there is only one player left - that player won.
 				return
 			}
-			action, raiseTo := player.actor.Act()
+			action, raiseTo := player.actor.Act(d.board.pot, callAmount, callAmount-player.chipsEnteredThisStage)
 			if action == RaiseAction && player.stack == 0 {
 				action = CallAction
 			}

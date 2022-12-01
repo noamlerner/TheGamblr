@@ -3,6 +3,7 @@ package engine
 import "fmt"
 
 const (
+	roundNumberLogStatement              = "Round %v\n"
 	twoStringFormatStatement             = "%s %s\n"
 	cardsLogStatement                    = "%s received %s\n"
 	actionLogStatement                   = "%s %s %v\n"                               // PlayerID ActionType Amount
@@ -40,6 +41,12 @@ func (l *logger) Action(a Action) {
 	fmt.Printf(actionLogStatement, a.Player().Id(), a.Type().ActionVerb(), a.Amount())
 }
 
+func (l *logger) Round(r int) {
+	if l.logLevel < LogLevelStages {
+		return
+	}
+	fmt.Printf(roundNumberLogStatement, r+1)
+}
 func (l *logger) Stage(board BoardState) {
 	if l.logLevel < LogLevelStages {
 		return
@@ -55,8 +62,8 @@ func (l *logger) Winners(board BoardState) {
 		if p == nil {
 			continue
 		}
-		if len(p.RoundEndStats().Cards()) > 0 {
-			fmt.Printf(winnersLogStatement, p.Id(), p.RoundEndStats().ChipsWon(), p.RoundEndStats().Cards().String(), p.RoundEndStats().HandStrength().String())
+		if len(p.PlayerRoundResults().Cards()) > 0 {
+			fmt.Printf(winnersLogStatement, p.Id(), p.PlayerRoundResults().ChipsWon(), p.PlayerRoundResults().Cards().String(), p.PlayerRoundResults().HandStrength().String())
 		}
 	}
 

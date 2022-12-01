@@ -1,4 +1,4 @@
-package network
+package server
 
 import (
 	context "context"
@@ -34,6 +34,7 @@ func (c *Casino) CreateGame(ctx context.Context, request *proto.CreateGameReques
 		SmallBlind:    int(request.SmallBlind),
 		NumRounds:     int(request.NumRounds),
 		StartingStack: int(request.StartingStack),
+		LogLevel:      engine.LogLevelCards,
 	}
 
 	if config.SmallBlind == 0 {
@@ -48,7 +49,7 @@ func (c *Casino) CreateGame(ctx context.Context, request *proto.CreateGameReques
 		config.StartingStack = 1000
 	}
 
-	c.games[gameID] = newGame(config)
+	c.games[gameID] = newGame(gameID, config)
 	return &proto.CreateGameResponse{GameId: gameID}, nil
 }
 
@@ -74,7 +75,7 @@ func (c *Casino) StartGame(ctx context.Context, request *proto.StartGameRequest)
 		return nil, err
 	}
 	go func() {
-		game.dealer.RunGame()
+		game.RuGame()
 	}()
 	return &proto.StartGameResponse{}, nil
 }
@@ -86,13 +87,17 @@ func (c *Casino) ReceiveUpdates(ctx context.Context, request *proto.ReceiveUpdat
 		return nil, err
 	}
 
-	return player.FlushUpdates(), nil
+	return player.FlushUpdates(int(request.SequenceNumber)), nil
 }
 
 func (c *Casino) Act(ctx context.Context, request *proto.ActRequest) (*proto.ActResponse, error) {
-	_, player, err := c.findGameAndPlayer(request.Token)
+	game, player, err := c.findGameAndPlayer(request.Token)
 	if err != nil {
 		return nil, err
+	}
+
+	if game.gameOver {
+		return nil, fmt.Errorf("game is over")
 	}
 
 	player.InputAction(request)

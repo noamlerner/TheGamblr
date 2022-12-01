@@ -14,6 +14,16 @@ type BoardState interface {
 	Players() []PlayerState
 }
 
+func NewBoardState(communityCards Cards, pot int, stage Stage, smallBlindButton int, players []PlayerState) BoardState {
+	return &visibleBoardState{
+		communityCards:   communityCards,
+		pot:              pot,
+		stage:            stage,
+		smallBlindButton: smallBlindButton,
+		vPlayers:         players,
+	}
+}
+
 func TestBoardState() BoardState {
 	return &visibleBoardState{
 		pot:              420,

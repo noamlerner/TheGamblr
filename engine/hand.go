@@ -62,7 +62,7 @@ func NewHand(allCards Cards) *Hand {
 		return repeatedRankHands[0]
 	}
 
-	if repeatedRankHands[0].strength == Trips && repeatedRankHands[1].strength >= Pair {
+	if repeatedRankHands[0].strength == Trips && len(repeatedRankHands) > 1 && repeatedRankHands[1].strength >= Pair {
 		// Full house
 		repeatedRankHands[0].strength = FullHouse
 		repeatedRankHands[0].cards = append(repeatedRankHands[0].cards, repeatedRankHands[1].cards[:2]...)
@@ -88,7 +88,7 @@ func NewHand(allCards Cards) *Hand {
 		return repeatedRankHands[0]
 	}
 
-	if repeatedRankHands[0].strength == Pair && repeatedRankHands[1].strength == Pair {
+	if repeatedRankHands[0].strength == Pair && repeatedRankHands.Len() > 1 && repeatedRankHands[1].strength == Pair {
 		repeatedRankHands[0].strength = TwoPair
 		repeatedRankHands[0].cards = append(repeatedRankHands[0].cards, repeatedRankHands[1].cards...)
 		repeatedRankHands[0].fillInHighCards(allCards)
@@ -172,6 +172,9 @@ func (h *Hand) Tie(o *Hand) bool {
 
 // extractStraight returns the best 5 cards for a straight. If they do not exist, this will return nil.
 func extractStraight(cards Cards) []*Card {
+	if len(cards) < 5 {
+		return nil
+	}
 	chainLength := 1
 	for i := 1; i < len(cards); i++ {
 		if cards[i].rank+1 == cards[i-1].rank {

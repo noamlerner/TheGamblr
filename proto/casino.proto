@@ -7,20 +7,41 @@ import "board_state.proto";
 import "action.proto";
 import "card.proto";
 
+message MyActionPacket {
+  // The current pot which is the pot at the beginning of this stage + all the chips people put in.
+  uint64 currentPot = 1;
+  // The total call amount (i.e. every player has to put in 100 chips).
+  uint64 call_amount = 2;
+  // The amount left for this particular player to call (you already put in 50, this would be 50).
+  uint64 left_to_call = 3;
+}
+
+message Update {
+  oneof update {
+    // The current state of the board. Only gets included once per stage. So you will get this once PreFlop, and then it
+    // will be null until the Flop.
+    BoardState board_state = 1;
+    // These will tell you all actions player's took since the last response you received.
+    Action action_update = 2;
+  }
+  // The sequence number of this update. Provide the last one you received in your next request to avoid getting
+  // repeats.
+  uint64 sequence_number = 3;
+}
 message ReceiveUpdatesRequest{
   string token = 1;
+  uint64 sequence_number = 2;
 }
 
 message ReceiveUpdatesResponse{
-  // The current state of the board. Only gets included once per stage. So you will get this once PreFlop, and then it
-  // will be null until the Flop.
-  BoardState board_state = 1;
-  // These will tell you all actions player's took since the last response you received.
-  repeated Action action_updates = 2;
-  // If this bool is true, it is your turn to act. You need to make a call to Act.
-  bool is_my_action = 3;
+  repeated Update updates = 1;
+  // This wil be nil unless it is your action. If it is your action, this will contain info that can help you make
+  // a decision. Once this is not-nil, you are expected to call Act()
+  MyActionPacket my_action_packet = 2;
   // You will always get this when you get the PreFlop board_state. Otherwise this will be nil.
-  repeated Card my_hand = 4;
+  repeated Card my_hand = 3;
+  // This is the action update you should include in the next request.
+  uint64 next_sequence_number = 4;
 }
 
 message ActRequest {

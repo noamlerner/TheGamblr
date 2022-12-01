@@ -8,7 +8,7 @@ import (
 
 var names = []string{"Noam", "Bean", "TheGamblr", "Bob", "Lulu", "Shlomi", "Lamp", "Leica"}
 
-func TestFullGame(t *testing.T) {
+func TestFullGame_3Players(t *testing.T) {
 	config := NewDefaultGameConfig()
 	config.LogLevel = LogLevelCards
 	config.NumRounds = 4
@@ -19,7 +19,16 @@ func TestFullGame(t *testing.T) {
 	dealer.RunGame()
 }
 
-func TestSequence(t *testing.T) {
+func TestFullGame_2Players(t *testing.T) {
+	config := NewDefaultGameConfig()
+	config.LogLevel = LogLevelCards
+	dealer := NewDealer(config)
+	dealer.SeatPlayer("Noam", NewRandomActionBot())
+	dealer.SeatPlayer("Bean", NewRandomActionBot())
+	dealer.RunGame()
+}
+
+func TestSequence_A(t *testing.T) {
 	numPlayers := 3
 	sequence := []ActionType{RaiseAction, RaiseAction, RaiseAction, CallAction}
 	config := NewDefaultGameConfig()

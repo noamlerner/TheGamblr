@@ -9,6 +9,7 @@ const (
 	Turn
 	River
 	RoundOver
+	GameOver
 )
 
 var (
@@ -18,6 +19,7 @@ var (
 		Turn:      "Turn",
 		River:     "River",
 		RoundOver: "RoundOver",
+		GameOver:  "GameOver",
 	}
 )
 

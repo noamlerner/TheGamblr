@@ -6,13 +6,13 @@ type SequenceOfActionsBot struct {
 	numCalled int
 }
 
-func (c *SequenceOfActionsBot) ReceiveCards(hand Cards, blind int, boardState BoardState) {
+func (c *SequenceOfActionsBot) ReceiveCards(hand Cards, blind int) {
 }
 
 func (c *SequenceOfActionsBot) SeeBoardState(boardState BoardState) {
 }
 
-func (c *SequenceOfActionsBot) Act() (ActionType, int) {
+func (c *SequenceOfActionsBot) Act(int, int, int) (ActionType, int) {
 	c.numCalled++
 	i := c.i
 	c.i++

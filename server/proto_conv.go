@@ -1,4 +1,4 @@
-package network
+package server
 
 import (
 	"pokerengine/engine"
@@ -46,13 +46,16 @@ func (c *_protoConv) Player(p engine.PlayerState) *proto.PlayerState {
 		Status:       proto.PlayerStatus(p.Status()),
 		SeatNumber:   int32(p.SeatNumber()),
 		Id:           p.Id(),
-		RoundResults: c.RoundResults(p.RoundEndStats()),
+		RoundResults: c.RoundResults(p.PlayerRoundResults()),
 	}
 }
 
 func (c *_protoConv) Players(players []engine.PlayerState) []*proto.PlayerState {
 	pPlayers := make([]*proto.PlayerState, len(players))
 	for i, player := range players {
+		if player == nil {
+			continue
+		}
 		pPlayers[i] = c.Player(player)
 	}
 	return pPlayers

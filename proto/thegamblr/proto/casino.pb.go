@@ -20,18 +20,179 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type MyActionPacket struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The current pot which is the pot at the beginning of this stage + all the chips people put in.
+	CurrentPot uint64 `protobuf:"varint,1,opt,name=currentPot,proto3" json:"currentPot,omitempty"`
+	// The total call amount (i.e. every player has to put in 100 chips).
+	CallAmount uint64 `protobuf:"varint,2,opt,name=call_amount,json=callAmount,proto3" json:"call_amount,omitempty"`
+	// The amount left for this particular player to call (you already put in 50, this would be 50).
+	LeftToCall uint64 `protobuf:"varint,3,opt,name=left_to_call,json=leftToCall,proto3" json:"left_to_call,omitempty"`
+}
+
+func (x *MyActionPacket) Reset() {
+	*x = MyActionPacket{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_casino_proto_msgTypes[0]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MyActionPacket) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MyActionPacket) ProtoMessage() {}
+
+func (x *MyActionPacket) ProtoReflect() protoreflect.Message {
+	mi := &file_casino_proto_msgTypes[0]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MyActionPacket.ProtoReflect.Descriptor instead.
+func (*MyActionPacket) Descriptor() ([]byte, []int) {
+	return file_casino_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *MyActionPacket) GetCurrentPot() uint64 {
+	if x != nil {
+		return x.CurrentPot
+	}
+	return 0
+}
+
+func (x *MyActionPacket) GetCallAmount() uint64 {
+	if x != nil {
+		return x.CallAmount
+	}
+	return 0
+}
+
+func (x *MyActionPacket) GetLeftToCall() uint64 {
+	if x != nil {
+		return x.LeftToCall
+	}
+	return 0
+}
+
+type Update struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Types that are assignable to Update:
+	//
+	//	*Update_BoardState
+	//	*Update_ActionUpdate
+	Update isUpdate_Update `protobuf_oneof:"update"`
+	// The sequence number of this update. Provide the last one you received in your next request to avoid getting
+	// repeats.
+	SequenceNumber uint64 `protobuf:"varint,3,opt,name=sequence_number,json=sequenceNumber,proto3" json:"sequence_number,omitempty"`
+}
+
+func (x *Update) Reset() {
+	*x = Update{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_casino_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Update) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Update) ProtoMessage() {}
+
+func (x *Update) ProtoReflect() protoreflect.Message {
+	mi := &file_casino_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Update.ProtoReflect.Descriptor instead.
+func (*Update) Descriptor() ([]byte, []int) {
+	return file_casino_proto_rawDescGZIP(), []int{1}
+}
+
+func (m *Update) GetUpdate() isUpdate_Update {
+	if m != nil {
+		return m.Update
+	}
+	return nil
+}
+
+func (x *Update) GetBoardState() *BoardState {
+	if x, ok := x.GetUpdate().(*Update_BoardState); ok {
+		return x.BoardState
+	}
+	return nil
+}
+
+func (x *Update) GetActionUpdate() *Action {
+	if x, ok := x.GetUpdate().(*Update_ActionUpdate); ok {
+		return x.ActionUpdate
+	}
+	return nil
+}
+
+func (x *Update) GetSequenceNumber() uint64 {
+	if x != nil {
+		return x.SequenceNumber
+	}
+	return 0
+}
+
+type isUpdate_Update interface {
+	isUpdate_Update()
+}
+
+type Update_BoardState struct {
+	// The current state of the board. Only gets included once per stage. So you will get this once PreFlop, and then it
+	// will be null until the Flop.
+	BoardState *BoardState `protobuf:"bytes,1,opt,name=board_state,json=boardState,proto3,oneof"`
+}
+
+type Update_ActionUpdate struct {
+	// These will tell you all actions player's took since the last response you received.
+	ActionUpdate *Action `protobuf:"bytes,2,opt,name=action_update,json=actionUpdate,proto3,oneof"`
+}
+
+func (*Update_BoardState) isUpdate_Update() {}
+
+func (*Update_ActionUpdate) isUpdate_Update() {}
+
 type ReceiveUpdatesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Token string `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	Token          string `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	SequenceNumber uint64 `protobuf:"varint,2,opt,name=sequence_number,json=sequenceNumber,proto3" json:"sequence_number,omitempty"`
 }
 
 func (x *ReceiveUpdatesRequest) Reset() {
 	*x = ReceiveUpdatesRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_casino_proto_msgTypes[0]
+		mi := &file_casino_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -44,7 +205,7 @@ func (x *ReceiveUpdatesRequest) String() string {
 func (*ReceiveUpdatesRequest) ProtoMessage() {}
 
 func (x *ReceiveUpdatesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_casino_proto_msgTypes[0]
+	mi := &file_casino_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -57,7 +218,7 @@ func (x *ReceiveUpdatesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReceiveUpdatesRequest.ProtoReflect.Descriptor instead.
 func (*ReceiveUpdatesRequest) Descriptor() ([]byte, []int) {
-	return file_casino_proto_rawDescGZIP(), []int{0}
+	return file_casino_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ReceiveUpdatesRequest) GetToken() string {
@@ -67,26 +228,32 @@ func (x *ReceiveUpdatesRequest) GetToken() string {
 	return ""
 }
 
+func (x *ReceiveUpdatesRequest) GetSequenceNumber() uint64 {
+	if x != nil {
+		return x.SequenceNumber
+	}
+	return 0
+}
+
 type ReceiveUpdatesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The current state of the board. Only gets included once per stage. So you will get this once PreFlop, and then it
-	// will be null until the Flop.
-	BoardState *BoardState `protobuf:"bytes,1,opt,name=board_state,json=boardState,proto3" json:"board_state,omitempty"`
-	// These will tell you all actions player's took since the last response you received.
-	ActionUpdates []*Action `protobuf:"bytes,2,rep,name=action_updates,json=actionUpdates,proto3" json:"action_updates,omitempty"`
-	// If this bool is true, it is your turn to act. You need to make a call to Act.
-	IsMyAction bool `protobuf:"varint,3,opt,name=is_my_action,json=isMyAction,proto3" json:"is_my_action,omitempty"`
+	Updates []*Update `protobuf:"bytes,1,rep,name=updates,proto3" json:"updates,omitempty"`
+	// This wil be nil unless it is your action. If it is your action, this will contain info that can help you make
+	// a decision. Once this is not-nil, you are expected to call Act()
+	MyActionPacket *MyActionPacket `protobuf:"bytes,2,opt,name=my_action_packet,json=myActionPacket,proto3" json:"my_action_packet,omitempty"`
 	// You will always get this when you get the PreFlop board_state. Otherwise this will be nil.
-	MyHand []*Card `protobuf:"bytes,4,rep,name=my_hand,json=myHand,proto3" json:"my_hand,omitempty"`
+	MyHand []*Card `protobuf:"bytes,3,rep,name=my_hand,json=myHand,proto3" json:"my_hand,omitempty"`
+	// This is the action update you should include in the next request.
+	NextSequenceNumber uint64 `protobuf:"varint,4,opt,name=next_sequence_number,json=nextSequenceNumber,proto3" json:"next_sequence_number,omitempty"`
 }
 
 func (x *ReceiveUpdatesResponse) Reset() {
 	*x = ReceiveUpdatesResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_casino_proto_msgTypes[1]
+		mi := &file_casino_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -99,7 +266,7 @@ func (x *ReceiveUpdatesResponse) String() string {
 func (*ReceiveUpdatesResponse) ProtoMessage() {}
 
 func (x *ReceiveUpdatesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_casino_proto_msgTypes[1]
+	mi := &file_casino_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -112,28 +279,21 @@ func (x *ReceiveUpdatesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReceiveUpdatesResponse.ProtoReflect.Descriptor instead.
 func (*ReceiveUpdatesResponse) Descriptor() ([]byte, []int) {
-	return file_casino_proto_rawDescGZIP(), []int{1}
+	return file_casino_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *ReceiveUpdatesResponse) GetBoardState() *BoardState {
+func (x *ReceiveUpdatesResponse) GetUpdates() []*Update {
 	if x != nil {
-		return x.BoardState
+		return x.Updates
 	}
 	return nil
 }
 
-func (x *ReceiveUpdatesResponse) GetActionUpdates() []*Action {
+func (x *ReceiveUpdatesResponse) GetMyActionPacket() *MyActionPacket {
 	if x != nil {
-		return x.ActionUpdates
+		return x.MyActionPacket
 	}
 	return nil
-}
-
-func (x *ReceiveUpdatesResponse) GetIsMyAction() bool {
-	if x != nil {
-		return x.IsMyAction
-	}
-	return false
 }
 
 func (x *ReceiveUpdatesResponse) GetMyHand() []*Card {
@@ -141,6 +301,13 @@ func (x *ReceiveUpdatesResponse) GetMyHand() []*Card {
 		return x.MyHand
 	}
 	return nil
+}
+
+func (x *ReceiveUpdatesResponse) GetNextSequenceNumber() uint64 {
+	if x != nil {
+		return x.NextSequenceNumber
+	}
+	return 0
 }
 
 type ActRequest struct {
@@ -161,7 +328,7 @@ type ActRequest struct {
 func (x *ActRequest) Reset() {
 	*x = ActRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_casino_proto_msgTypes[2]
+		mi := &file_casino_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -174,7 +341,7 @@ func (x *ActRequest) String() string {
 func (*ActRequest) ProtoMessage() {}
 
 func (x *ActRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_casino_proto_msgTypes[2]
+	mi := &file_casino_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -187,7 +354,7 @@ func (x *ActRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ActRequest.ProtoReflect.Descriptor instead.
 func (*ActRequest) Descriptor() ([]byte, []int) {
-	return file_casino_proto_rawDescGZIP(), []int{2}
+	return file_casino_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ActRequest) GetToken() string {
@@ -220,7 +387,7 @@ type ActResponse struct {
 func (x *ActResponse) Reset() {
 	*x = ActResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_casino_proto_msgTypes[3]
+		mi := &file_casino_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -233,7 +400,7 @@ func (x *ActResponse) String() string {
 func (*ActResponse) ProtoMessage() {}
 
 func (x *ActResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_casino_proto_msgTypes[3]
+	mi := &file_casino_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -246,7 +413,7 @@ func (x *ActResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ActResponse.ProtoReflect.Descriptor instead.
 func (*ActResponse) Descriptor() ([]byte, []int) {
-	return file_casino_proto_rawDescGZIP(), []int{3}
+	return file_casino_proto_rawDescGZIP(), []int{5}
 }
 
 type JoinGameRequest struct {
@@ -263,7 +430,7 @@ type JoinGameRequest struct {
 func (x *JoinGameRequest) Reset() {
 	*x = JoinGameRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_casino_proto_msgTypes[4]
+		mi := &file_casino_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -276,7 +443,7 @@ func (x *JoinGameRequest) String() string {
 func (*JoinGameRequest) ProtoMessage() {}
 
 func (x *JoinGameRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_casino_proto_msgTypes[4]
+	mi := &file_casino_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -289,7 +456,7 @@ func (x *JoinGameRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JoinGameRequest.ProtoReflect.Descriptor instead.
 func (*JoinGameRequest) Descriptor() ([]byte, []int) {
-	return file_casino_proto_rawDescGZIP(), []int{4}
+	return file_casino_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *JoinGameRequest) GetPlayerId() string {
@@ -322,7 +489,7 @@ type JoinGameResponse struct {
 func (x *JoinGameResponse) Reset() {
 	*x = JoinGameResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_casino_proto_msgTypes[5]
+		mi := &file_casino_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -335,7 +502,7 @@ func (x *JoinGameResponse) String() string {
 func (*JoinGameResponse) ProtoMessage() {}
 
 func (x *JoinGameResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_casino_proto_msgTypes[5]
+	mi := &file_casino_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -348,7 +515,7 @@ func (x *JoinGameResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JoinGameResponse.ProtoReflect.Descriptor instead.
 func (*JoinGameResponse) Descriptor() ([]byte, []int) {
-	return file_casino_proto_rawDescGZIP(), []int{5}
+	return file_casino_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *JoinGameResponse) GetToken() string {
@@ -389,7 +556,7 @@ type CreateGameRequest struct {
 func (x *CreateGameRequest) Reset() {
 	*x = CreateGameRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_casino_proto_msgTypes[6]
+		mi := &file_casino_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -402,7 +569,7 @@ func (x *CreateGameRequest) String() string {
 func (*CreateGameRequest) ProtoMessage() {}
 
 func (x *CreateGameRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_casino_proto_msgTypes[6]
+	mi := &file_casino_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -415,7 +582,7 @@ func (x *CreateGameRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateGameRequest.ProtoReflect.Descriptor instead.
 func (*CreateGameRequest) Descriptor() ([]byte, []int) {
-	return file_casino_proto_rawDescGZIP(), []int{6}
+	return file_casino_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *CreateGameRequest) GetSmallBlind() uint64 {
@@ -451,7 +618,7 @@ type CreateGameResponse struct {
 func (x *CreateGameResponse) Reset() {
 	*x = CreateGameResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_casino_proto_msgTypes[7]
+		mi := &file_casino_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -464,7 +631,7 @@ func (x *CreateGameResponse) String() string {
 func (*CreateGameResponse) ProtoMessage() {}
 
 func (x *CreateGameResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_casino_proto_msgTypes[7]
+	mi := &file_casino_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -477,7 +644,7 @@ func (x *CreateGameResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateGameResponse.ProtoReflect.Descriptor instead.
 func (*CreateGameResponse) Descriptor() ([]byte, []int) {
-	return file_casino_proto_rawDescGZIP(), []int{7}
+	return file_casino_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *CreateGameResponse) GetGameId() string {
@@ -499,7 +666,7 @@ type StartGameRequest struct {
 func (x *StartGameRequest) Reset() {
 	*x = StartGameRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_casino_proto_msgTypes[8]
+		mi := &file_casino_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -512,7 +679,7 @@ func (x *StartGameRequest) String() string {
 func (*StartGameRequest) ProtoMessage() {}
 
 func (x *StartGameRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_casino_proto_msgTypes[8]
+	mi := &file_casino_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -525,7 +692,7 @@ func (x *StartGameRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartGameRequest.ProtoReflect.Descriptor instead.
 func (*StartGameRequest) Descriptor() ([]byte, []int) {
-	return file_casino_proto_rawDescGZIP(), []int{8}
+	return file_casino_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *StartGameRequest) GetToken() string {
@@ -544,7 +711,7 @@ type StartGameResponse struct {
 func (x *StartGameResponse) Reset() {
 	*x = StartGameResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_casino_proto_msgTypes[9]
+		mi := &file_casino_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -557,7 +724,7 @@ func (x *StartGameResponse) String() string {
 func (*StartGameResponse) ProtoMessage() {}
 
 func (x *StartGameResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_casino_proto_msgTypes[9]
+	mi := &file_casino_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -570,7 +737,7 @@ func (x *StartGameResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartGameResponse.ProtoReflect.Descriptor instead.
 func (*StartGameResponse) Descriptor() ([]byte, []int) {
-	return file_casino_proto_rawDescGZIP(), []int{9}
+	return file_casino_proto_rawDescGZIP(), []int{11}
 }
 
 var File_casino_proto protoreflect.FileDescriptor
@@ -580,23 +747,45 @@ var file_casino_proto_rawDesc = []byte{
 	0x74, 0x68, 0x65, 0x67, 0x61, 0x6d, 0x62, 0x6c, 0x72, 0x1a, 0x11, 0x62, 0x6f, 0x61, 0x72, 0x64,
 	0x5f, 0x73, 0x74, 0x61, 0x74, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x0c, 0x61, 0x63,
 	0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x0a, 0x63, 0x61, 0x72, 0x64,
-	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x2d, 0x0a, 0x15, 0x52, 0x65, 0x63, 0x65, 0x69, 0x76,
-	0x65, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
-	0x14, 0x0a, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05,
-	0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x22, 0xd6, 0x01, 0x0a, 0x16, 0x52, 0x65, 0x63, 0x65, 0x69, 0x76,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x73, 0x0a, 0x0e, 0x4d, 0x79, 0x41, 0x63, 0x74, 0x69,
+	0x6f, 0x6e, 0x50, 0x61, 0x63, 0x6b, 0x65, 0x74, 0x12, 0x1e, 0x0a, 0x0a, 0x63, 0x75, 0x72, 0x72,
+	0x65, 0x6e, 0x74, 0x50, 0x6f, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x63, 0x75,
+	0x72, 0x72, 0x65, 0x6e, 0x74, 0x50, 0x6f, 0x74, 0x12, 0x1f, 0x0a, 0x0b, 0x63, 0x61, 0x6c, 0x6c,
+	0x5f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x63,
+	0x61, 0x6c, 0x6c, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x20, 0x0a, 0x0c, 0x6c, 0x65, 0x66,
+	0x74, 0x5f, 0x74, 0x6f, 0x5f, 0x63, 0x61, 0x6c, 0x6c, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x0a, 0x6c, 0x65, 0x66, 0x74, 0x54, 0x6f, 0x43, 0x61, 0x6c, 0x6c, 0x22, 0xaf, 0x01, 0x0a, 0x06,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x12, 0x38, 0x0a, 0x0b, 0x62, 0x6f, 0x61, 0x72, 0x64, 0x5f,
+	0x73, 0x74, 0x61, 0x74, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x74, 0x68,
+	0x65, 0x67, 0x61, 0x6d, 0x62, 0x6c, 0x72, 0x2e, 0x42, 0x6f, 0x61, 0x72, 0x64, 0x53, 0x74, 0x61,
+	0x74, 0x65, 0x48, 0x00, 0x52, 0x0a, 0x62, 0x6f, 0x61, 0x72, 0x64, 0x53, 0x74, 0x61, 0x74, 0x65,
+	0x12, 0x38, 0x0a, 0x0d, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x75, 0x70, 0x64, 0x61, 0x74,
+	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x74, 0x68, 0x65, 0x67, 0x61, 0x6d,
+	0x62, 0x6c, 0x72, 0x2e, 0x41, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x48, 0x00, 0x52, 0x0c, 0x61, 0x63,
+	0x74, 0x69, 0x6f, 0x6e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x12, 0x27, 0x0a, 0x0f, 0x73, 0x65,
+	0x71, 0x75, 0x65, 0x6e, 0x63, 0x65, 0x5f, 0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x04, 0x52, 0x0e, 0x73, 0x65, 0x71, 0x75, 0x65, 0x6e, 0x63, 0x65, 0x4e, 0x75, 0x6d,
+	0x62, 0x65, 0x72, 0x42, 0x08, 0x0a, 0x06, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x22, 0x56, 0x0a,
+	0x15, 0x52, 0x65, 0x63, 0x65, 0x69, 0x76, 0x65, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x73, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x27, 0x0a, 0x0f,
+	0x73, 0x65, 0x71, 0x75, 0x65, 0x6e, 0x63, 0x65, 0x5f, 0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0e, 0x73, 0x65, 0x71, 0x75, 0x65, 0x6e, 0x63, 0x65, 0x4e,
+	0x75, 0x6d, 0x62, 0x65, 0x72, 0x22, 0xe6, 0x01, 0x0a, 0x16, 0x52, 0x65, 0x63, 0x65, 0x69, 0x76,
 	0x65, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x36, 0x0a, 0x0b, 0x62, 0x6f, 0x61, 0x72, 0x64, 0x5f, 0x73, 0x74, 0x61, 0x74, 0x65, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x74, 0x68, 0x65, 0x67, 0x61, 0x6d, 0x62, 0x6c,
-	0x72, 0x2e, 0x42, 0x6f, 0x61, 0x72, 0x64, 0x53, 0x74, 0x61, 0x74, 0x65, 0x52, 0x0a, 0x62, 0x6f,
-	0x61, 0x72, 0x64, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x38, 0x0a, 0x0e, 0x61, 0x63, 0x74, 0x69,
-	0x6f, 0x6e, 0x5f, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b,
-	0x32, 0x11, 0x2e, 0x74, 0x68, 0x65, 0x67, 0x61, 0x6d, 0x62, 0x6c, 0x72, 0x2e, 0x41, 0x63, 0x74,
-	0x69, 0x6f, 0x6e, 0x52, 0x0d, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x55, 0x70, 0x64, 0x61, 0x74,
-	0x65, 0x73, 0x12, 0x20, 0x0a, 0x0c, 0x69, 0x73, 0x5f, 0x6d, 0x79, 0x5f, 0x61, 0x63, 0x74, 0x69,
-	0x6f, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0a, 0x69, 0x73, 0x4d, 0x79, 0x41, 0x63,
-	0x74, 0x69, 0x6f, 0x6e, 0x12, 0x28, 0x0a, 0x07, 0x6d, 0x79, 0x5f, 0x68, 0x61, 0x6e, 0x64, 0x18,
-	0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x74, 0x68, 0x65, 0x67, 0x61, 0x6d, 0x62, 0x6c,
-	0x72, 0x2e, 0x43, 0x61, 0x72, 0x64, 0x52, 0x06, 0x6d, 0x79, 0x48, 0x61, 0x6e, 0x64, 0x22, 0x72,
+	0x12, 0x2b, 0x0a, 0x07, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28,
+	0x0b, 0x32, 0x11, 0x2e, 0x74, 0x68, 0x65, 0x67, 0x61, 0x6d, 0x62, 0x6c, 0x72, 0x2e, 0x55, 0x70,
+	0x64, 0x61, 0x74, 0x65, 0x52, 0x07, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x73, 0x12, 0x43, 0x0a,
+	0x10, 0x6d, 0x79, 0x5f, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x70, 0x61, 0x63, 0x6b, 0x65,
+	0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x74, 0x68, 0x65, 0x67, 0x61, 0x6d,
+	0x62, 0x6c, 0x72, 0x2e, 0x4d, 0x79, 0x41, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x61, 0x63, 0x6b,
+	0x65, 0x74, 0x52, 0x0e, 0x6d, 0x79, 0x41, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x61, 0x63, 0x6b,
+	0x65, 0x74, 0x12, 0x28, 0x0a, 0x07, 0x6d, 0x79, 0x5f, 0x68, 0x61, 0x6e, 0x64, 0x18, 0x03, 0x20,
+	0x03, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x74, 0x68, 0x65, 0x67, 0x61, 0x6d, 0x62, 0x6c, 0x72, 0x2e,
+	0x43, 0x61, 0x72, 0x64, 0x52, 0x06, 0x6d, 0x79, 0x48, 0x61, 0x6e, 0x64, 0x12, 0x30, 0x0a, 0x14,
+	0x6e, 0x65, 0x78, 0x74, 0x5f, 0x73, 0x65, 0x71, 0x75, 0x65, 0x6e, 0x63, 0x65, 0x5f, 0x6e, 0x75,
+	0x6d, 0x62, 0x65, 0x72, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x12, 0x6e, 0x65, 0x78, 0x74,
+	0x53, 0x65, 0x71, 0x75, 0x65, 0x6e, 0x63, 0x65, 0x4e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x22, 0x72,
 	0x0a, 0x0a, 0x41, 0x63, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14, 0x0a, 0x05,
 	0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74, 0x6f, 0x6b,
 	0x65, 0x6e, 0x12, 0x36, 0x0a, 0x0b, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x74, 0x79, 0x70,
@@ -670,43 +859,47 @@ func file_casino_proto_rawDescGZIP() []byte {
 	return file_casino_proto_rawDescData
 }
 
-var file_casino_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_casino_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_casino_proto_goTypes = []interface{}{
-	(*ReceiveUpdatesRequest)(nil),  // 0: thegamblr.ReceiveUpdatesRequest
-	(*ReceiveUpdatesResponse)(nil), // 1: thegamblr.ReceiveUpdatesResponse
-	(*ActRequest)(nil),             // 2: thegamblr.ActRequest
-	(*ActResponse)(nil),            // 3: thegamblr.ActResponse
-	(*JoinGameRequest)(nil),        // 4: thegamblr.JoinGameRequest
-	(*JoinGameResponse)(nil),       // 5: thegamblr.JoinGameResponse
-	(*CreateGameRequest)(nil),      // 6: thegamblr.CreateGameRequest
-	(*CreateGameResponse)(nil),     // 7: thegamblr.CreateGameResponse
-	(*StartGameRequest)(nil),       // 8: thegamblr.StartGameRequest
-	(*StartGameResponse)(nil),      // 9: thegamblr.StartGameResponse
-	(*BoardState)(nil),             // 10: thegamblr.BoardState
-	(*Action)(nil),                 // 11: thegamblr.Action
-	(*Card)(nil),                   // 12: thegamblr.Card
-	(ActionType)(0),                // 13: thegamblr.ActionType
+	(*MyActionPacket)(nil),         // 0: thegamblr.MyActionPacket
+	(*Update)(nil),                 // 1: thegamblr.Update
+	(*ReceiveUpdatesRequest)(nil),  // 2: thegamblr.ReceiveUpdatesRequest
+	(*ReceiveUpdatesResponse)(nil), // 3: thegamblr.ReceiveUpdatesResponse
+	(*ActRequest)(nil),             // 4: thegamblr.ActRequest
+	(*ActResponse)(nil),            // 5: thegamblr.ActResponse
+	(*JoinGameRequest)(nil),        // 6: thegamblr.JoinGameRequest
+	(*JoinGameResponse)(nil),       // 7: thegamblr.JoinGameResponse
+	(*CreateGameRequest)(nil),      // 8: thegamblr.CreateGameRequest
+	(*CreateGameResponse)(nil),     // 9: thegamblr.CreateGameResponse
+	(*StartGameRequest)(nil),       // 10: thegamblr.StartGameRequest
+	(*StartGameResponse)(nil),      // 11: thegamblr.StartGameResponse
+	(*BoardState)(nil),             // 12: thegamblr.BoardState
+	(*Action)(nil),                 // 13: thegamblr.Action
+	(*Card)(nil),                   // 14: thegamblr.Card
+	(ActionType)(0),                // 15: thegamblr.ActionType
 }
 var file_casino_proto_depIdxs = []int32{
-	10, // 0: thegamblr.ReceiveUpdatesResponse.board_state:type_name -> thegamblr.BoardState
-	11, // 1: thegamblr.ReceiveUpdatesResponse.action_updates:type_name -> thegamblr.Action
-	12, // 2: thegamblr.ReceiveUpdatesResponse.my_hand:type_name -> thegamblr.Card
-	13, // 3: thegamblr.ActRequest.action_type:type_name -> thegamblr.ActionType
-	6,  // 4: thegamblr.Casino.CreateGame:input_type -> thegamblr.CreateGameRequest
-	4,  // 5: thegamblr.Casino.JoinGame:input_type -> thegamblr.JoinGameRequest
-	8,  // 6: thegamblr.Casino.StartGame:input_type -> thegamblr.StartGameRequest
-	0,  // 7: thegamblr.Casino.ReceiveUpdates:input_type -> thegamblr.ReceiveUpdatesRequest
-	2,  // 8: thegamblr.Casino.Act:input_type -> thegamblr.ActRequest
-	7,  // 9: thegamblr.Casino.CreateGame:output_type -> thegamblr.CreateGameResponse
-	5,  // 10: thegamblr.Casino.JoinGame:output_type -> thegamblr.JoinGameResponse
-	9,  // 11: thegamblr.Casino.StartGame:output_type -> thegamblr.StartGameResponse
-	1,  // 12: thegamblr.Casino.ReceiveUpdates:output_type -> thegamblr.ReceiveUpdatesResponse
-	3,  // 13: thegamblr.Casino.Act:output_type -> thegamblr.ActResponse
-	9,  // [9:14] is the sub-list for method output_type
-	4,  // [4:9] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	12, // 0: thegamblr.Update.board_state:type_name -> thegamblr.BoardState
+	13, // 1: thegamblr.Update.action_update:type_name -> thegamblr.Action
+	1,  // 2: thegamblr.ReceiveUpdatesResponse.updates:type_name -> thegamblr.Update
+	0,  // 3: thegamblr.ReceiveUpdatesResponse.my_action_packet:type_name -> thegamblr.MyActionPacket
+	14, // 4: thegamblr.ReceiveUpdatesResponse.my_hand:type_name -> thegamblr.Card
+	15, // 5: thegamblr.ActRequest.action_type:type_name -> thegamblr.ActionType
+	8,  // 6: thegamblr.Casino.CreateGame:input_type -> thegamblr.CreateGameRequest
+	6,  // 7: thegamblr.Casino.JoinGame:input_type -> thegamblr.JoinGameRequest
+	10, // 8: thegamblr.Casino.StartGame:input_type -> thegamblr.StartGameRequest
+	2,  // 9: thegamblr.Casino.ReceiveUpdates:input_type -> thegamblr.ReceiveUpdatesRequest
+	4,  // 10: thegamblr.Casino.Act:input_type -> thegamblr.ActRequest
+	9,  // 11: thegamblr.Casino.CreateGame:output_type -> thegamblr.CreateGameResponse
+	7,  // 12: thegamblr.Casino.JoinGame:output_type -> thegamblr.JoinGameResponse
+	11, // 13: thegamblr.Casino.StartGame:output_type -> thegamblr.StartGameResponse
+	3,  // 14: thegamblr.Casino.ReceiveUpdates:output_type -> thegamblr.ReceiveUpdatesResponse
+	5,  // 15: thegamblr.Casino.Act:output_type -> thegamblr.ActResponse
+	11, // [11:16] is the sub-list for method output_type
+	6,  // [6:11] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_casino_proto_init() }
@@ -719,7 +912,7 @@ func file_casino_proto_init() {
 	file_card_proto_init()
 	if !protoimpl.UnsafeEnabled {
 		file_casino_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ReceiveUpdatesRequest); i {
+			switch v := v.(*MyActionPacket); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -731,7 +924,7 @@ func file_casino_proto_init() {
 			}
 		}
 		file_casino_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ReceiveUpdatesResponse); i {
+			switch v := v.(*Update); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -743,7 +936,7 @@ func file_casino_proto_init() {
 			}
 		}
 		file_casino_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ActRequest); i {
+			switch v := v.(*ReceiveUpdatesRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -755,7 +948,7 @@ func file_casino_proto_init() {
 			}
 		}
 		file_casino_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ActResponse); i {
+			switch v := v.(*ReceiveUpdatesResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -767,7 +960,7 @@ func file_casino_proto_init() {
 			}
 		}
 		file_casino_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*JoinGameRequest); i {
+			switch v := v.(*ActRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -779,7 +972,7 @@ func file_casino_proto_init() {
 			}
 		}
 		file_casino_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*JoinGameResponse); i {
+			switch v := v.(*ActResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -791,7 +984,7 @@ func file_casino_proto_init() {
 			}
 		}
 		file_casino_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateGameRequest); i {
+			switch v := v.(*JoinGameRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -803,7 +996,7 @@ func file_casino_proto_init() {
 			}
 		}
 		file_casino_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateGameResponse); i {
+			switch v := v.(*JoinGameResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -815,7 +1008,7 @@ func file_casino_proto_init() {
 			}
 		}
 		file_casino_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*StartGameRequest); i {
+			switch v := v.(*CreateGameRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -827,6 +1020,30 @@ func file_casino_proto_init() {
 			}
 		}
 		file_casino_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CreateGameResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_casino_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StartGameRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_casino_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*StartGameResponse); i {
 			case 0:
 				return &v.state
@@ -839,13 +1056,17 @@ func file_casino_proto_init() {
 			}
 		}
 	}
+	file_casino_proto_msgTypes[1].OneofWrappers = []interface{}{
+		(*Update_BoardState)(nil),
+		(*Update_ActionUpdate)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_casino_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

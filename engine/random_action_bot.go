@@ -15,13 +15,13 @@ type randomActionBot struct {
 	rand *rand.Rand
 }
 
-func (c *randomActionBot) ReceiveCards(hand Cards, blind int, boardState BoardState) {
+func (c *randomActionBot) ReceiveCards(hand Cards, blind int) {
 }
 
 func (c *randomActionBot) SeeBoardState(boardState BoardState) {
 }
 
-func (c *randomActionBot) Act() (ActionType, int) {
+func (c *randomActionBot) Act(int, int, int) (ActionType, int) {
 	f := c.rand.Float64()
 	switch {
 	case f < 0.5:

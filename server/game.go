@@ -1,4 +1,4 @@
-package network
+package server
 
 import (
 	"pokerengine/engine"
@@ -7,20 +7,27 @@ import (
 )
 
 type game struct {
-	dealer *engine.Dealer
-
+	dealer            *engine.Dealer
+	gameOver          bool
 	existingPlayerIds map[string]bool
 	players           map[string]*grpcBot
+	id                string
 }
 
-func newGame(config *engine.GameConfig) *game {
+func newGame(id string, config *engine.GameConfig) *game {
 	dealer := engine.NewDealer(config)
 	return &game{
+		id:                id,
 		dealer:            dealer,
 		existingPlayerIds: map[string]bool{},
+		players:           map[string]*grpcBot{},
 	}
 }
 
+func (g *game) RuGame() {
+	_ = g.dealer.RunGame()
+	g.gameOver = true
+}
 func (g *game) seatPlayer(id string) (string, int) {
 	token := uuid.Must(uuid.NewRandom()).String()
 	grpcBot := newGrpcBot()
