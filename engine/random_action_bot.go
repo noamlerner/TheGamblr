@@ -15,7 +15,7 @@ type randomActionBot struct {
 	rand *rand.Rand
 }
 
-func (c *randomActionBot) ReceiveCards(hand Cards, blind int) {
+func (c *randomActionBot) ReceiveCards(hand Cards) {
 }
 
 func (c *randomActionBot) SeeBoardState(boardState BoardState) {

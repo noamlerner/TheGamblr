@@ -3,7 +3,7 @@ package engine
 type BotPlayer interface {
 	// ReceiveCards is a way to give every player the information as to what cards they will be playing with this
 	// round.
-	ReceiveCards(hand Cards, blind int)
+	ReceiveCards(hand Cards)
 	// SeeBoardState is called before players take action on PreFlop, Flop, Turn and River. It is also called once a
 	// game has ended.
 	SeeBoardState(boardState BoardState)

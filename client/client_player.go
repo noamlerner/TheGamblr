@@ -69,7 +69,7 @@ func (c *GRPCBot) updateLoop(ctx context.Context, seqNum uint64) (uint64, bool) 
 	// pass the updates along to our bot
 	for _, update := range updateRes.GetUpdates() {
 		// informUpdate will return true if the game is over
-		if c.informOfUpdate(update) {
+		if c.informOfUpdate(updateRes, update) {
 			return seqNum, true
 		}
 	}
@@ -81,7 +81,7 @@ func (c *GRPCBot) updateLoop(ctx context.Context, seqNum uint64) (uint64, bool) 
 	return updateRes.GetNextSequenceNumber(), false
 }
 
-func (c *GRPCBot) informOfUpdate(update *proto.Update) bool {
+func (c *GRPCBot) informOfUpdate(res *proto.ReceiveUpdatesResponse, update *proto.Update) bool {
 	// Update can either be an ActionUpdate or a BoardState.
 	action := update.GetActionUpdate()
 	if action != nil {
@@ -89,6 +89,9 @@ func (c *GRPCBot) informOfUpdate(update *proto.Update) bool {
 		c.actor.ActionUpdate(engine.NewAction(engine.ActionType(action.Type), protoConv.convertProtoPlayer(player), int(action.Amount)))
 	} else {
 		boardState := protoConv.convertBoard(update.GetBoardState())
+		if boardState.Stage() == engine.PreFlop {
+			c.actor.ReceiveCards(protoConv.convertProtoCards(res.GetMyHand()))
+		}
 		c.actor.SeeBoardState(boardState)
 		if boardState.Stage() == engine.GameOver {
 			return true

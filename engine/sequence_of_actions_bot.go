@@ -6,7 +6,7 @@ type SequenceOfActionsBot struct {
 	numCalled int
 }
 
-func (c *SequenceOfActionsBot) ReceiveCards(hand Cards, blind int) {
+func (c *SequenceOfActionsBot) ReceiveCards(hand Cards) {
 }
 
 func (c *SequenceOfActionsBot) SeeBoardState(boardState BoardState) {

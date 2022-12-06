@@ -24,7 +24,7 @@ func newGrpcBot() *grpcBot {
 		actionChannel: make(chan engine.Action),
 	}
 }
-func (g *grpcBot) ReceiveCards(hand engine.Cards, blind int) {
+func (g *grpcBot) ReceiveCards(hand engine.Cards) {
 	g.mutex.Lock()
 	defer g.mutex.Unlock()
 	g.cards = hand
