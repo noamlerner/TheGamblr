@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-type ClientBot struct {
+type GRPCBot struct {
 	actor  engine.BotPlayer
 	casino proto.CasinoClient
 
@@ -19,15 +19,15 @@ type ClientBot struct {
 	token string
 }
 
-func NewClientBot(name string, actor engine.BotPlayer, connectionString string) *ClientBot {
+func NewClientBot(name string, actor engine.BotPlayer, connectionString string) *GRPCBot {
 	conn, err := grpc.Dial(connectionString, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		panic(err)
 	}
-	return &ClientBot{actor: actor, casino: proto.NewCasinoClient(conn), name: name}
+	return &GRPCBot{actor: actor, casino: proto.NewCasinoClient(conn), name: name}
 }
 
-func (c *ClientBot) JoinGame(ctx context.Context, gameID string) {
+func (c *GRPCBot) JoinGame(ctx context.Context, gameID string) {
 	res, err := c.casino.JoinGame(ctx, &proto.JoinGameRequest{GameId: gameID, PlayerId: c.name})
 	if err != nil {
 		panic(err)
@@ -35,13 +35,13 @@ func (c *ClientBot) JoinGame(ctx context.Context, gameID string) {
 	c.token = res.Token
 }
 
-func (c *ClientBot) StartGame(ctx context.Context) {
+func (c *GRPCBot) StartGame(ctx context.Context) {
 	_, err := c.casino.StartGame(ctx, &proto.StartGameRequest{Token: c.token})
 	if err != nil {
 		panic(err)
 	}
 }
-func (c *ClientBot) CreateGame(ctx context.Context) string {
+func (c *GRPCBot) CreateGame(ctx context.Context) string {
 	res, err := c.casino.CreateGame(ctx, &proto.CreateGameRequest{})
 	if err != nil {
 		panic(err)
@@ -49,7 +49,7 @@ func (c *ClientBot) CreateGame(ctx context.Context) string {
 	return res.GameId
 }
 
-func (c *ClientBot) Run(ctx context.Context) {
+func (c *GRPCBot) Run(ctx context.Context) {
 	seqNum := uint64(0)
 	gameOver := false
 	for !gameOver {
@@ -59,7 +59,7 @@ func (c *ClientBot) Run(ctx context.Context) {
 	}
 }
 
-func (c *ClientBot) updateLoop(ctx context.Context, seqNum uint64) (uint64, bool) {
+func (c *GRPCBot) updateLoop(ctx context.Context, seqNum uint64) (uint64, bool) {
 	// any new updates will be here.
 	updateRes, _ := c.casino.ReceiveUpdates(ctx, &proto.ReceiveUpdatesRequest{
 		Token:          c.token,
@@ -81,7 +81,7 @@ func (c *ClientBot) updateLoop(ctx context.Context, seqNum uint64) (uint64, bool
 	return updateRes.GetNextSequenceNumber(), false
 }
 
-func (c *ClientBot) informOfUpdate(update *proto.Update) bool {
+func (c *GRPCBot) informOfUpdate(update *proto.Update) bool {
 	// Update can either be an ActionUpdate or a BoardState.
 	action := update.GetActionUpdate()
 	if action != nil {
@@ -97,7 +97,7 @@ func (c *ClientBot) informOfUpdate(update *proto.Update) bool {
 	return false
 }
 
-func (c *ClientBot) act(ctx context.Context, updateRes *proto.ReceiveUpdatesResponse) {
+func (c *GRPCBot) act(ctx context.Context, updateRes *proto.ReceiveUpdatesResponse) {
 	packet := updateRes.MyActionPacket
 	action, amount := c.actor.Act(int(packet.CurrentPot), int(packet.CallAmount), int(packet.LeftToCall))
 
