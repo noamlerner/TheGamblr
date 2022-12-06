@@ -71,8 +71,8 @@ interface in mind, and I believe it would be easiest for you to conform to this 
 type BotPlayer interface {
 	// ReceiveCards is a way to give every player the information as to what cards they will be playing with this
 	// round.
-	ReceiveCards(hand Cards, blind int)
-	// SeeBoardState is called before players take action on PreFlop, Flop, Turn and River. It is also called once a
+	ReceiveCards(hand Cards)
+	// SeeBoardState is called before players take action on Flop, Turn and River. It is also called once a
 	// game has ended.
 	SeeBoardState(boardState BoardState)
 	// Act allows the player to return what action they want to take. The second return value is only considered
@@ -84,8 +84,9 @@ type BotPlayer interface {
 	// Two: The total call amount (i.e. every player has to put in 100 chips).
 	// Three: The amount left for this particular player to call (you already put in 50, this would be 50).
 	Act(pot int, callAmount int, leftToCall int) (ActionType, int)
-	// ActionUpdate lets the bot know of an action another bot player took.
-	ActionUpdate(action Action)
+	// ActionUpdate lets the bot know of an action another bot player took, and the board state after the action
+	// is complete.
+	ActionUpdate(action Action, state BoardState)
 }
 ```
 

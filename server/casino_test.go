@@ -52,7 +52,7 @@ func TestGameFlow(t *testing.T) {
 	actionUpdates := updateResponse.Updates
 
 	boardState := updateResponse.Updates[0].GetBoardState()
-	assert.Equal(t, uint64(0), boardState.Pot)
+	assert.Equal(t, uint64(5), boardState.Pot)
 	assert.Equal(t, proto.Stage_PRE_FLOP, boardState.Stage)
 	assert.Equal(t, uint32(1), boardState.SmallBlindButton)
 	assert.Equal(t, uint32(1), boardState.SmallBlindButton)
@@ -63,14 +63,16 @@ func TestGameFlow(t *testing.T) {
 	assert.Equal(t, uint64(15), updateResponse.MyActionPacket.CurrentPot)
 	assert.Equal(t, uint64(10), updateResponse.MyActionPacket.CallAmount)
 	assert.Equal(t, uint64(5), updateResponse.MyActionPacket.LeftToCall)
-	assert.Len(t, actionUpdates, 3)
-	assert.Equal(t, uint64(5), actionUpdates[1].GetActionUpdate().Amount)
-	assert.Equal(t, "Noam", actionUpdates[1].GetActionUpdate().Player.Id)
-	assert.Equal(t, proto.ActionType_SMALL_BLIND, actionUpdates[1].GetActionUpdate().Type)
+	assert.Len(t, actionUpdates, 2)
+	assert.Equal(t, uint64(5), actionUpdates[0].GetActionUpdate().Amount)
+	assert.Equal(t, uint64(5), actionUpdates[0].GetBoardState().Pot)
+	assert.Equal(t, "Noam", actionUpdates[0].GetActionUpdate().Player.Id)
+	assert.Equal(t, proto.ActionType_SMALL_BLIND, actionUpdates[0].GetActionUpdate().Type)
 
-	assert.Equal(t, uint64(10), actionUpdates[2].GetActionUpdate().Amount)
-	assert.Equal(t, "Bean", actionUpdates[2].GetActionUpdate().Player.Id)
-	assert.Equal(t, proto.ActionType_BIG_BLIND, actionUpdates[2].GetActionUpdate().Type)
+	assert.Equal(t, uint64(10), actionUpdates[1].GetActionUpdate().Amount)
+	assert.Equal(t, uint64(15), actionUpdates[1].GetBoardState().Pot)
+	assert.Equal(t, "Bean", actionUpdates[1].GetActionUpdate().Player.Id)
+	assert.Equal(t, proto.ActionType_BIG_BLIND, actionUpdates[1].GetActionUpdate().Type)
 
 	updateResponse, err = casino.ReceiveUpdates(context.Background(), &proto.ReceiveUpdatesRequest{
 		Token: beanToken,

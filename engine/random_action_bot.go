@@ -34,5 +34,5 @@ func (c *randomActionBot) Act(int, int, int) (ActionType, int) {
 	return CheckFoldAction, 0
 }
 
-func (c *randomActionBot) ActionUpdate(action Action) {
+func (c *randomActionBot) ActionUpdate(action Action, state BoardState) {
 }

@@ -82,11 +82,11 @@ func (c *GRPCBot) updateLoop(ctx context.Context, seqNum uint64) (uint64, bool) 
 }
 
 func (c *GRPCBot) informOfUpdate(res *proto.ReceiveUpdatesResponse, update *proto.Update) bool {
-	// Update can either be an ActionUpdate or a BoardState.
 	action := update.GetActionUpdate()
 	if action != nil {
 		player := action.Player
-		c.actor.ActionUpdate(engine.NewAction(engine.ActionType(action.Type), protoConv.convertProtoPlayer(player), int(action.Amount)))
+		action := engine.NewAction(engine.ActionType(action.Type), protoConv.convertProtoPlayer(player), int(action.Amount))
+		c.actor.ActionUpdate(action, protoConv.convertBoard(update.GetBoardState()))
 	} else {
 		boardState := protoConv.convertBoard(update.GetBoardState())
 		if boardState.Stage() == engine.PreFlop {
