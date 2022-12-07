@@ -21,3 +21,23 @@ func NewDefaultGameConfig() *GameConfig {
 		LogLevel:      LogLevelNone,
 	}
 }
+
+func (c *GameConfig) WithLogLevel(level LogLevel) *GameConfig {
+	c.LogLevel = level
+	return c
+}
+
+func (c *GameConfig) WithNumRounds(numRounds int) *GameConfig {
+	c.NumRounds = numRounds
+	return c
+}
+
+func (c *GameConfig) WithSmallBlind(smallBlind int) *GameConfig {
+	c.SmallBlind = smallBlind
+	return c
+}
+
+func (c *GameConfig) WithStartingStack(startingStack int) *GameConfig {
+	c.StartingStack = startingStack
+	return c
+}

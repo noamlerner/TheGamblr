@@ -34,7 +34,7 @@ func (b *playerState) newStage() {
 	b.chipsEnteredThisStage = 0
 }
 
-// newRound performs the following actions
+// newRound performs the following sequence
 // 1. Clears out the players cards
 // 2. Marks the player as out of the game if their stack is at 0
 // 3. Resets chipsEnteredThisStage and chipsEnteredThisRound
@@ -54,7 +54,7 @@ func (b *playerState) winChips(amount int) {
 }
 
 func (b *playerState) removeChips(amount int) int {
-	if amount > b.stack {
+	if amount >= b.stack {
 		b.status = PlayerStatusAllIn
 		amount = b.stack
 	}
