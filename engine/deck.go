@@ -7,17 +7,32 @@ import (
 
 const NumCardsInDeck = 52
 
-type Deck struct {
+type Deck interface {
+	NextCard() *Card
+	NextCards(n int) []*Card
+	Shuffle() Deck
+	Cards() Cards
+}
+
+type deck struct {
 	cards  []*Card
 	onCard int
 	rand   *rand.Rand
+
+	// if these are set, we will place the cards at the front of the deck. good for simulations.
+	cardsToTheFront Cards
+	restOfTheDeck   Cards
 }
 
-func NewDeckWithCards(cards []*Card) *Deck {
-	return &Deck{cards: cards, rand: rand.New(rand.NewSource(time.Now().Unix()))}
+func (d *deck) Cards() Cards {
+	return d.cards
+}
+
+func NewDeckWithCards(cards []*Card) Deck {
+	return &deck{cards: cards, rand: rand.New(rand.NewSource(time.Now().Unix()))}
 
 }
-func NewDeck() *Deck {
+func NewDeck() Deck {
 	cards := make([]*Card, NumCardsInDeck)
 	for s := 0; s < NumSuits; s++ {
 		for r := 0; r < NumRanks; r++ {
@@ -28,7 +43,7 @@ func NewDeck() *Deck {
 	return NewDeckWithCards(cards)
 }
 
-func (d *Deck) NextCard() *Card {
+func (d *deck) NextCard() *Card {
 	if d.onCard > NumCardsInDeck {
 		return nil
 	}
@@ -37,7 +52,7 @@ func (d *Deck) NextCard() *Card {
 	return c
 }
 
-func (d *Deck) NextCards(n int) []*Card {
+func (d *deck) NextCards(n int) []*Card {
 	if d.onCard > NumCardsInDeck {
 		return nil
 	}
@@ -46,7 +61,7 @@ func (d *Deck) NextCards(n int) []*Card {
 	return c
 }
 
-func (d *Deck) Shuffle() *Deck {
+func (d *deck) Shuffle() Deck {
 	d.onCard = 0
 	d.rand.Shuffle(len(d.cards), func(i, j int) { d.cards[i], d.cards[j] = d.cards[j], d.cards[i] })
 	return d

@@ -5,7 +5,7 @@ import (
 )
 
 type dealer struct {
-	deck        *Deck
+	deck        Deck
 	board       *boardState
 	gameConfig  *GameConfig
 	lastToRaise *playerState
@@ -117,6 +117,7 @@ func (d *dealer) whoShowsTheirHand(winners EndRoundPlayers) map[string]*playerFo
 			return
 		}
 		if w.willShowHand {
+			strongestHand = playerIdToHandRank[p.id]
 			// we already know they will show their hand
 			return
 		}
@@ -254,15 +255,16 @@ func (d *dealer) newRound() {
 			// SmallBlind
 			addedToPot = p.receiveCards(d.deck.NextCards(2), d.gameConfig.SmallBlind, boardState)
 			d.announceAction(p, SmallBlind, d.gameConfig.SmallBlind)
+			d.lastToRaise = p
 		case 1:
 			// big blind
 			addedToPot = p.receiveCards(d.deck.NextCards(2), d.gameConfig.SmallBlind*2, boardState)
 			d.announceAction(p, BigBlind, d.gameConfig.SmallBlind*2)
-			d.lastToRaise = p
 		default:
 			addedToPot = p.receiveCards(d.deck.NextCards(2), 0, boardState)
 		}
 		onPlayer++
+		d.log.Cards(p)
 		d.board.addToPot(addedToPot)
 	})
 	d.board.addToPot(d.carryOverPot)
@@ -344,7 +346,11 @@ func (d *dealer) betting() {
 				// player calls, this might put them all in automatically.
 				chipsEntered := player.removeChips(callAmount - player.chipsEnteredThisStage)
 				d.board.addToPot(chipsEntered)
-				d.announceAction(player, CallAction, chipsEntered)
+				if chipsEntered == 0 {
+					d.announceAction(player, CheckFoldAction, chipsEntered)
+				} else {
+					d.announceAction(player, CallAction, chipsEntered)
+				}
 			case RaiseAction:
 				// Player Raises. There is a MinRaise, if they tried to Raise less than that, we
 				// will automatically put them there. The first MinRaise == BigBlind.
@@ -366,7 +372,7 @@ func (d *dealer) betting() {
 					// This is an edge case that can only happen once per stage - if the player to raise is also the
 					// first to act and that player raised on their first action. In that case, we don't get
 					// an extra iteration.
-					startAt = endAt
+					startAt = d.board.nextActiveSeat(player.seatNumber)
 					endAt = player.seatNumber
 					iterate = true
 				}
