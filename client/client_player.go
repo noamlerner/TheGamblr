@@ -50,25 +50,31 @@ func (c *ClientBot) CreateGame(ctx context.Context) string {
 }
 
 func (c *ClientBot) Run(ctx context.Context) {
-	seq_num := uint64(0)
+	seqNum := uint64(0)
 	gameOver := false
 	for !gameOver {
-		seq_num, gameOver = c.updateLoop(ctx, seq_num)
+		// keep running the update loop until the game is over. We update the seqNum at each iteration with the one
+		// returned to us by the Casino.
+		seqNum, gameOver = c.updateLoop(ctx, seqNum)
 	}
 }
 
-func (c *ClientBot) updateLoop(ctx context.Context, seq_num uint64) (uint64, bool) {
+func (c *ClientBot) updateLoop(ctx context.Context, seqNum uint64) (uint64, bool) {
+	// any new updates will be here.
 	updateRes, _ := c.casino.ReceiveUpdates(ctx, &proto.ReceiveUpdatesRequest{
 		Token:          c.token,
-		SequenceNumber: seq_num,
+		SequenceNumber: seqNum,
 	})
 
+	// pass the updates along to our bot
 	for _, update := range updateRes.GetUpdates() {
+		// informUpdate will return true if the game is over
 		if c.informOfUpdate(update) {
-			return seq_num, true
+			return seqNum, true
 		}
 	}
 
+	// if it's my turn, it's time to act.
 	if updateRes.GetMyActionPacket() != nil {
 		c.act(ctx, updateRes)
 	}
@@ -76,46 +82,19 @@ func (c *ClientBot) updateLoop(ctx context.Context, seq_num uint64) (uint64, boo
 }
 
 func (c *ClientBot) informOfUpdate(update *proto.Update) bool {
+	// Update can either be an ActionUpdate or a BoardState.
 	action := update.GetActionUpdate()
 	if action != nil {
 		player := action.Player
-		c.actor.ActionUpdate(engine.NewAction(engine.ActionType(action.Type), convertProtoPlayer(player), int(action.Amount)))
+		c.actor.ActionUpdate(engine.NewAction(engine.ActionType(action.Type), protoConv.convertProtoPlayer(player), int(action.Amount)))
 	} else {
-		board := update.GetBoardState()
-		players := make([]engine.PlayerState, len(board.GetPlayers()))
-		for i, player := range board.GetPlayers() {
-			players[i] = convertProtoPlayer(player)
-		}
-		boardState := engine.NewBoardState(convertProtoCards(board.CommunityCards), int(board.Pot), engine.Stage(board.Stage), int(board.SmallBlindButton), players)
+		boardState := protoConv.convertBoard(update.GetBoardState())
 		c.actor.SeeBoardState(boardState)
 		if boardState.Stage() == engine.GameOver {
 			return true
 		}
 	}
 	return false
-}
-
-func convertProtoPlayer(player *proto.PlayerState) engine.PlayerState {
-	if player == nil {
-		return nil
-	}
-	var roundResults engine.PlayerRoundResults
-	if player.GetRoundResults() != nil {
-		pbResults := player.RoundResults
-		cards := convertProtoCards(pbResults.Cards)
-		roundResults = engine.NewPlayerRoundResults(int(pbResults.ChipsWon), cards, engine.HandStrength(pbResults.HandStrength))
-	}
-
-	p := engine.NewPlayerState(int(player.GetStack()), engine.PlayerStatus(player.GetStatus()), int(player.GetSeatNumber()), player.GetId(), roundResults)
-	return p
-}
-
-func convertProtoCards(pbCards []*proto.Card) engine.Cards {
-	cards := make(engine.Cards, len(pbCards))
-	for i, card := range pbCards {
-		cards[i] = engine.NewCard(engine.Rank(card.Rank), engine.Suit(card.Suit))
-	}
-	return cards
 }
 
 func (c *ClientBot) act(ctx context.Context, updateRes *proto.ReceiveUpdatesResponse) {
