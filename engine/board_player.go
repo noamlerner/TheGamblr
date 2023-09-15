@@ -18,10 +18,10 @@ func (b *playerState) fold() {
 	b.status = PlayerStatusFolded
 }
 
-func (b *playerState) receiveCards(cards Cards, blindAmount int, boardState BoardState) int {
+func (b *playerState) receiveCards(cards Cards, blindAmount int) int {
 	b.chipsEnteredThisStage = 0
 	b.cards = cards
-	b.actor.ReceiveCards(cards, blindAmount, boardState)
+	b.actor.ReceiveCards(cards, blindAmount)
 	return b.removeChips(blindAmount)
 }
 

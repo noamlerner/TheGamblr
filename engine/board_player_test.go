@@ -35,7 +35,7 @@ func TestReceiveCards(t *testing.T) {
 			}
 
 			cards := GenerateRandHand()[:2]
-			blindPaid := player.receiveCards(cards, test.blindAmount, nil)
+			blindPaid := player.receiveCards(cards, test.blindAmount)
 			assert.Equal(t, MinInt(test.blindAmount, 100), blindPaid)
 			assert.Equal(t, MaxInt(0, 100-test.blindAmount), player.stack)
 			assert.Equal(t, Cards(cards), player.cards)

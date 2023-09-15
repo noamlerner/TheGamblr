@@ -6,14 +6,14 @@ type OneActionBot struct {
 	boardState BoardState
 }
 
-func (c *OneActionBot) ReceiveCards(hand Cards, blind int, boardState BoardState) {
-	c.boardState = boardState
+func (c *OneActionBot) ReceiveCards(hand Cards, blind int) {
 }
 
 func (c *OneActionBot) SeeBoardState(boardState BoardState) {
+	c.boardState = boardState
 }
 
-func (c *OneActionBot) Act() (ActionType, int) {
+func (c *OneActionBot) Act(int, int, int) (ActionType, int) {
 	c.numCalled++
 	return c.action, 10
 }

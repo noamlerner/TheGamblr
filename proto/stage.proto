@@ -9,4 +9,5 @@ enum Stage {
   TURN = 2;
   RIVER = 3;
   ROUND_COMPLETE = 4;
+  GAME_COMPLETE = 5;
 }

@@ -18,7 +18,25 @@ type PlayerState interface {
 	// Id returns a unique player ID.
 	Id() string
 	// PlayerRoundResults will be nil if this isnt a round end or if the player didn't make it there.
-	RoundEndStats() PlayerRoundResults
+	PlayerRoundResults() PlayerRoundResults
+}
+
+func NewPlayerState(stack int, status PlayerStatus, seatNumber int, id string, playerRoundResults PlayerRoundResults) PlayerState {
+	return &visiblePlayerState{
+		stack:         stack,
+		status:        status,
+		seatNumber:    seatNumber,
+		id:            id,
+		roundEndStats: playerRoundResults,
+	}
+}
+
+func NewPlayerRoundResults(chipsWon int, cards Cards, strength HandStrength) PlayerRoundResults {
+	return &roundEndStats{
+		chipsWon:     chipsWon,
+		cards:        cards,
+		handStrength: strength,
+	}
 }
 
 func NilPlayerState() PlayerState {
@@ -68,7 +86,7 @@ func (v *visiblePlayerState) Id() string {
 	return v.id
 }
 
-func (v *visiblePlayerState) RoundEndStats() PlayerRoundResults {
+func (v *visiblePlayerState) PlayerRoundResults() PlayerRoundResults {
 	if v == nil {
 		return nil
 	}
