@@ -38,7 +38,7 @@ func TestFlushUpdates(t *testing.T) {
 	bot := newGrpcBot()
 	hand := engine.GenerateRandHand()[:2]
 	boardState := engine.TestBoardState()
-	bot.ReceiveCards(hand, 0)
+	bot.ReceiveCards(hand)
 	bot.actionPacket = &proto.MyActionPacket{
 		CurrentPot: 20,
 		CallAmount: 20,

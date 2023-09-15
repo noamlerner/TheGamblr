@@ -6,7 +6,7 @@ type OneActionBot struct {
 	boardState BoardState
 }
 
-func (c *OneActionBot) ReceiveCards(hand Cards, blind int) {
+func (c *OneActionBot) ReceiveCards(hand Cards) {
 }
 
 func (c *OneActionBot) SeeBoardState(boardState BoardState) {

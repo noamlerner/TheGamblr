@@ -21,7 +21,7 @@ func (b *playerState) fold() {
 func (b *playerState) receiveCards(cards Cards, blindAmount int) int {
 	b.chipsEnteredThisStage = 0
 	b.cards = cards
-	b.actor.ReceiveCards(cards, blindAmount)
+	b.actor.ReceiveCards(cards)
 	return b.removeChips(blindAmount)
 }
 
