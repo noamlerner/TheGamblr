@@ -1,4 +1,4 @@
-package TheGamblr
+package engine
 
 func GenerateRandHand() []*Card {
 	return NewDeck().Shuffle().NextCards(5)

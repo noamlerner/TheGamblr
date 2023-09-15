@@ -1,8 +1,8 @@
-package TheGamblr
+package engine
 
 // playerForWinnerCalculations is used to calculate winners and who is going to show their hands.
 type playerForWinnerCalculations struct {
-	p    *BoardPlayer
+	p    *playerState
 	hand *Hand
 	// true if the player is going to show their hand.
 	willShowHand bool
@@ -32,8 +32,8 @@ func (r *roundEndPlayerState) HandStrength() HandStrength {
 type PlayerResults interface {
 	// Stack returns how many chips this player has to bet.
 	Stack() int
-	// Status returns one of the possible BoardPlayerStatus
-	Status() BoardPlayerStatus
+	// Status returns one of the possible PlayerStatus
+	Status() PlayerStatus
 	// SeatNumber return the index of this player on the board
 	SeatNumber() int
 	// Id returns a unique player ID.
@@ -46,12 +46,12 @@ type PlayerResults interface {
 	HandStrength() HandStrength
 }
 
-func (p *playerForWinnerCalculations) WinChips(chips int) {
-	p.p.WinChips(chips)
+func (p *playerForWinnerCalculations) winChips(chips int) {
+	p.p.winChips(chips)
 	p.chipsWon += chips
 }
 
-func (p *playerForWinnerCalculations) ToState() PlayerResults {
+func (p *playerForWinnerCalculations) toState() PlayerResults {
 	var cards Cards
 	handStrength := HandStrengthUnset
 	if p.willShowHand {

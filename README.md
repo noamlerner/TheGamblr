@@ -69,7 +69,7 @@ const (
 ```
 
 ### Mid-Game Actions
-_Boredom overtook us and he begain to speak_
+_Boredom overtook us and he began to speak_
 
 During the betting rounds, you will receive `ActionUpdates` Every time an action is taken.
 ```

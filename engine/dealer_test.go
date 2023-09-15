@@ -1,4 +1,4 @@
-package TheGamblr
+package engine
 
 import (
 	"testing"
@@ -47,9 +47,9 @@ func TestDealer_NewRound(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			players, _ := setupPlayers(test.playersAtSeats)
 
-			dealer := NewDealer()
+			dealer := newDealer()
 			dealer.board.players = players
-			dealer.NewRound()
+			dealer.newRound()
 
 			smallBlindIndex := 0
 			if test.playersAtSeats[0] == 0 {
@@ -57,10 +57,10 @@ func TestDealer_NewRound(t *testing.T) {
 			}
 
 			assert.Equal(t, test.playersAtSeats[smallBlindIndex], dealer.board.smallBlindButton)
-			assert.Equal(t, 95, dealer.board.PlayerAtSeat(test.playersAtSeats[smallBlindIndex]).stack)
-			assert.Equal(t, 5, dealer.board.PlayerAtSeat(test.playersAtSeats[smallBlindIndex]).chipsEnteredThisRound)
-			assert.Equal(t, 90, dealer.board.PlayerAtSeat(test.playersAtSeats[smallBlindIndex+1]).stack)
-			assert.Equal(t, 10, dealer.board.PlayerAtSeat(test.playersAtSeats[smallBlindIndex+1]).chipsEnteredThisRound)
+			assert.Equal(t, 95, dealer.board.playerAtSeat(test.playersAtSeats[smallBlindIndex]).stack)
+			assert.Equal(t, 5, dealer.board.playerAtSeat(test.playersAtSeats[smallBlindIndex]).chipsEnteredThisRound)
+			assert.Equal(t, 90, dealer.board.playerAtSeat(test.playersAtSeats[smallBlindIndex+1]).stack)
+			assert.Equal(t, 10, dealer.board.playerAtSeat(test.playersAtSeats[smallBlindIndex+1]).chipsEnteredThisRound)
 			assert.Equal(t, 15, dealer.board.pot)
 
 			smallBlindIndex++
@@ -68,13 +68,13 @@ func TestDealer_NewRound(t *testing.T) {
 			if bigBlindIndex >= len(test.playersAtSeats) {
 				bigBlindIndex = 0
 			}
-			dealer.board.PlayerAtSeat(test.playersAtSeats[smallBlindIndex]).stack = 2
-			dealer.NewRound()
+			dealer.board.playerAtSeat(test.playersAtSeats[smallBlindIndex]).stack = 2
+			dealer.newRound()
 			assert.Equal(t, test.playersAtSeats[smallBlindIndex], dealer.board.smallBlindButton)
-			assert.Equal(t, 0, dealer.board.PlayerAtSeat(test.playersAtSeats[smallBlindIndex]).stack)
-			assert.Equal(t, 2, dealer.board.PlayerAtSeat(test.playersAtSeats[smallBlindIndex]).chipsEnteredThisStage)
-			assert.Equal(t, 90, dealer.board.PlayerAtSeat(test.playersAtSeats[bigBlindIndex]).stack)
-			assert.Equal(t, 10, dealer.board.PlayerAtSeat(test.playersAtSeats[bigBlindIndex]).chipsEnteredThisRound)
+			assert.Equal(t, 0, dealer.board.playerAtSeat(test.playersAtSeats[smallBlindIndex]).stack)
+			assert.Equal(t, 2, dealer.board.playerAtSeat(test.playersAtSeats[smallBlindIndex]).chipsEnteredThisStage)
+			assert.Equal(t, 90, dealer.board.playerAtSeat(test.playersAtSeats[bigBlindIndex]).stack)
+			assert.Equal(t, 10, dealer.board.playerAtSeat(test.playersAtSeats[bigBlindIndex]).chipsEnteredThisRound)
 			assert.Equal(t, 12, dealer.board.pot)
 		})
 	}
@@ -84,20 +84,20 @@ func TestBoard_NewRound_TwoPlayers(t *testing.T) {
 	twoPlayerIndexes := twoPlayerTest.playersAtSeats
 	players, _ := setupPlayers(twoPlayerIndexes)
 
-	dealer := NewDealer()
+	dealer := newDealer()
 	dealer.board.players = players
-	dealer.NewRound()
+	dealer.newRound()
 
 	assert.Equal(t, twoPlayerIndexes[0], dealer.board.smallBlindButton)
-	assert.Equal(t, 95, dealer.board.PlayerAtSeat(twoPlayerIndexes[0]).stack)
-	assert.Equal(t, 90, dealer.board.PlayerAtSeat(twoPlayerIndexes[1]).stack)
+	assert.Equal(t, 95, dealer.board.playerAtSeat(twoPlayerIndexes[0]).stack)
+	assert.Equal(t, 90, dealer.board.playerAtSeat(twoPlayerIndexes[1]).stack)
 	assert.Equal(t, 15, dealer.board.pot)
 
-	dealer.board.PlayerAtSeat(twoPlayerIndexes[1]).stack = 2
-	dealer.NewRound()
+	dealer.board.playerAtSeat(twoPlayerIndexes[1]).stack = 2
+	dealer.newRound()
 	assert.Equal(t, twoPlayerIndexes[1], dealer.board.smallBlindButton)
-	assert.Equal(t, 0, dealer.board.PlayerAtSeat(twoPlayerIndexes[1]).stack)
-	assert.Equal(t, 85, dealer.board.PlayerAtSeat(twoPlayerIndexes[0]).stack)
+	assert.Equal(t, 0, dealer.board.playerAtSeat(twoPlayerIndexes[1]).stack)
+	assert.Equal(t, 85, dealer.board.playerAtSeat(twoPlayerIndexes[0]).stack)
 	assert.Equal(t, 12, dealer.board.pot)
 }
 
@@ -106,26 +106,26 @@ func TestDealer_BettingRound_EveryoneCalls(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			players, _ := setupPlayers(test.playersAtSeats)
 
-			dealer := NewDealer()
+			dealer := newDealer()
 			dealer.board.players = players
-			dealer.NewRound()
+			dealer.newRound()
 
-			dealer.Betting()
-			assert.Equal(t, len(test.playersAtSeats)*dealer.gameConfig.smallBlind*2, dealer.board.pot)
+			dealer.betting()
+			assert.Equal(t, len(test.playersAtSeats)*dealer.gameConfig.SmallBlind*2, dealer.board.pot)
 
 			for _, p := range test.playersAtSeats {
-				assert.Equal(t, dealer.board.PlayerAtSeat(p).chipsEnteredThisStage, 10)
-				assert.Equal(t, dealer.board.PlayerAtSeat(p).chipsEnteredThisRound, 10)
-				assert.Equal(t, dealer.board.PlayerAtSeat(p).stack, 90)
+				assert.Equal(t, dealer.board.playerAtSeat(p).chipsEnteredThisStage, 10)
+				assert.Equal(t, dealer.board.playerAtSeat(p).chipsEnteredThisRound, 10)
+				assert.Equal(t, dealer.board.playerAtSeat(p).stack, 90)
 			}
 
-			dealer.board.NextStage()
-			dealer.Betting()
-			assert.Equal(t, len(test.playersAtSeats)*dealer.gameConfig.smallBlind*2, dealer.board.pot)
+			dealer.board.nextStage()
+			dealer.betting()
+			assert.Equal(t, len(test.playersAtSeats)*dealer.gameConfig.SmallBlind*2, dealer.board.pot)
 			for _, p := range test.playersAtSeats {
-				assert.Equal(t, dealer.board.PlayerAtSeat(p).chipsEnteredThisStage, 0)
-				assert.Equal(t, dealer.board.PlayerAtSeat(p).chipsEnteredThisRound, 10)
-				assert.Equal(t, dealer.board.PlayerAtSeat(p).stack, 90)
+				assert.Equal(t, dealer.board.playerAtSeat(p).chipsEnteredThisStage, 0)
+				assert.Equal(t, dealer.board.playerAtSeat(p).chipsEnteredThisRound, 10)
+				assert.Equal(t, dealer.board.playerAtSeat(p).stack, 90)
 			}
 		})
 	}
@@ -135,18 +135,18 @@ func TestDealer_BettingRound_OneRaiser(t *testing.T) {
 	for _, test := range append(tests, twoPlayerTest) {
 		t.Run(test.name, func(t *testing.T) {
 			players, _ := setupPlayers(test.playersAtSeats)
-			dealer := NewDealer()
+			dealer := newDealer()
 			dealer.board.players = players
-			raiserIndex := dealer.board.NextActiveSeat(0)
+			raiserIndex := dealer.board.nextActiveSeat(0)
 			// He raises and min raise will be 10, so everything has to get to 20.
-			dealer.board.PlayerAtSeat(raiserIndex).actor = &OneActionBot{action: RaiseAction}
-			dealer.NewRound()
+			dealer.board.playerAtSeat(raiserIndex).actor = &OneActionBot{action: RaiseAction}
+			dealer.newRound()
 
-			dealer.Betting()
+			dealer.betting()
 			assert.Equal(t, len(test.playersAtSeats)*20, dealer.board.pot)
 			for _, i := range test.playersAtSeats {
-				p := dealer.board.PlayerAtSeat(i)
-				if i == raiserIndex || i == dealer.board.NextActiveSeat(raiserIndex) {
+				p := dealer.board.playerAtSeat(i)
+				if i == raiserIndex || i == dealer.board.nextActiveSeat(raiserIndex) {
 					// since 1 raised, it only gets to go once. 1 is small blind, 2 is big blind.
 					// This means 2's first call is to 1's raise, so it also only goes once.
 					assert.Equal(t, 1, p.actor.(*OneActionBot).numCalled)
@@ -157,13 +157,13 @@ func TestDealer_BettingRound_OneRaiser(t *testing.T) {
 				assert.Equal(t, 80, p.stack)
 			}
 
-			dealer.board.NextStage()
-			dealer.Betting()
+			dealer.board.nextStage()
+			dealer.betting()
 			assert.Equal(t, len(test.playersAtSeats)*30, dealer.board.pot)
 			for _, p := range test.playersAtSeats {
-				assert.Equal(t, dealer.board.PlayerAtSeat(p).chipsEnteredThisStage, 10)
-				assert.Equal(t, dealer.board.PlayerAtSeat(p).chipsEnteredThisRound, 30)
-				assert.Equal(t, dealer.board.PlayerAtSeat(p).stack, 70)
+				assert.Equal(t, dealer.board.playerAtSeat(p).chipsEnteredThisStage, 10)
+				assert.Equal(t, dealer.board.playerAtSeat(p).chipsEnteredThisRound, 30)
+				assert.Equal(t, dealer.board.playerAtSeat(p).stack, 70)
 			}
 		})
 	}
@@ -173,30 +173,30 @@ func TestDealer_BettingRound_RaiseToInfinity(t *testing.T) {
 	for _, test := range append(tests, twoPlayerTest) {
 		t.Run(test.name, func(t *testing.T) {
 			players, _ := setupPlayers(test.playersAtSeats)
-			dealer := NewDealer()
+			dealer := newDealer()
 			dealer.board.players = players
 
-			raiserIndex := dealer.board.NextActiveSeat(0)
-			dealer.board.PlayerAtSeat(raiserIndex).actor = &OneActionBot{action: RaiseAction}
-			raiserIndex = dealer.board.NextActiveSeat(raiserIndex)
-			dealer.board.PlayerAtSeat(raiserIndex).actor = &OneActionBot{action: RaiseAction}
+			raiserIndex := dealer.board.nextActiveSeat(0)
+			dealer.board.playerAtSeat(raiserIndex).actor = &OneActionBot{action: RaiseAction}
+			raiserIndex = dealer.board.nextActiveSeat(raiserIndex)
+			dealer.board.playerAtSeat(raiserIndex).actor = &OneActionBot{action: RaiseAction}
 
-			dealer.NewRound()
-			dealer.Betting()
+			dealer.newRound()
+			dealer.betting()
 			assert.Equal(t, len(test.playersAtSeats)*100, dealer.board.pot)
 			for _, i := range test.playersAtSeats {
-				p := dealer.board.PlayerAtSeat(i)
+				p := dealer.board.playerAtSeat(i)
 				assert.Equal(t, 100, p.chipsEnteredThisStage)
 				assert.Equal(t, 0, p.stack)
 			}
 
-			dealer.board.NextStage()
-			dealer.Betting()
+			dealer.board.nextStage()
+			dealer.betting()
 			assert.Equal(t, len(test.playersAtSeats)*100, dealer.board.pot)
 			for _, p := range test.playersAtSeats {
-				assert.Equal(t, dealer.board.PlayerAtSeat(p).chipsEnteredThisStage, 0)
-				assert.Equal(t, dealer.board.PlayerAtSeat(p).chipsEnteredThisRound, 100)
-				assert.Equal(t, dealer.board.PlayerAtSeat(p).stack, 0)
+				assert.Equal(t, dealer.board.playerAtSeat(p).chipsEnteredThisStage, 0)
+				assert.Equal(t, dealer.board.playerAtSeat(p).chipsEnteredThisRound, 100)
+				assert.Equal(t, dealer.board.playerAtSeat(p).stack, 0)
 			}
 		})
 	}
@@ -206,16 +206,16 @@ func TestDealer_BettingRound_Folder(t *testing.T) {
 	for _, test := range append(tests, twoPlayerTest) {
 		t.Run(test.name, func(t *testing.T) {
 			players, _ := setupPlayers(test.playersAtSeats)
-			dealer := NewDealer()
+			dealer := newDealer()
 			dealer.board.players = players
 
-			folder := dealer.board.PlayerAtSeat(dealer.board.NextActiveSeat(0))
+			folder := dealer.board.playerAtSeat(dealer.board.nextActiveSeat(0))
 			folder.actor = &OneActionBot{action: FoldAction}
-			raiser := dealer.board.PlayerAtSeat(dealer.board.NextActiveSeat(folder.seatNumber))
+			raiser := dealer.board.playerAtSeat(dealer.board.nextActiveSeat(folder.seatNumber))
 			raiser.actor = &OneActionBot{action: RaiseAction}
 
-			dealer.NewRound()
-			dealer.Betting()
+			dealer.newRound()
+			dealer.betting()
 
 			if len(test.playersAtSeats) == 2 {
 				return
@@ -224,22 +224,22 @@ func TestDealer_BettingRound_Folder(t *testing.T) {
 			// small blind
 			assert.Equal(t, folder.chipsEnteredThisStage, 5)
 			assert.Equal(t, folder.chipsEnteredThisRound, 5)
-			assert.Equal(t, folder.status, BoardPlayerStatusFolded)
+			assert.Equal(t, folder.status, PlayerStatusFolded)
 
 			if len(test.playersAtSeats) == 2 {
 				return
 			}
 
-			folder = dealer.board.PlayerAtSeat(dealer.board.PrevActiveSeat(raiser.seatNumber))
+			folder = dealer.board.playerAtSeat(dealer.board.prevActiveSeat(raiser.seatNumber))
 			folder.actor.(*OneActionBot).action = FoldAction
 
-			dealer.board.NextStage()
-			dealer.Betting()
+			dealer.board.nextStage()
+			dealer.betting()
 
 			assert.Equal(t, 3, folder.actor.(*OneActionBot).numCalled)
 			assert.Equal(t, folder.chipsEnteredThisStage, 0)
 			assert.Equal(t, folder.chipsEnteredThisRound, 20)
-			assert.Equal(t, folder.status, BoardPlayerStatusFolded)
+			assert.Equal(t, folder.status, PlayerStatusFolded)
 		})
 	}
 }
@@ -248,19 +248,19 @@ func TestDealer_BettingRound_AllFolded(t *testing.T) {
 	for _, test := range append(tests, twoPlayerTest) {
 		t.Run(test.name, func(t *testing.T) {
 			players, _ := setupPlayers(test.playersAtSeats)
-			dealer := NewDealer()
+			dealer := newDealer()
 			dealer.board.players = players
 
 			for _, i := range test.playersAtSeats {
-				dealer.board.PlayerAtSeat(i).actor.(*OneActionBot).action = FoldAction
+				dealer.board.playerAtSeat(i).actor.(*OneActionBot).action = FoldAction
 			}
 
-			dealer.NewRound()
-			dealer.board.NextStage()
-			dealer.Betting()
+			dealer.newRound()
+			dealer.board.nextStage()
+			dealer.betting()
 
 			numSeen := 0
-			dealer.board.IterateActivePlayers(func(p *BoardPlayer) {
+			dealer.board.iterateActivePlayers(func(p *playerState) {
 				numSeen++
 				if numSeen == len(test.playersAtSeats) {
 					// we short circuit when theres only one player left
@@ -277,9 +277,9 @@ func TestDealer_PlayRound_NoOneFolds(t *testing.T) {
 	for _, test := range append(tests, twoPlayerTest) {
 		t.Run(test.name, func(t *testing.T) {
 			players, _ := setupPlayers(test.playersAtSeats)
-			dealer := NewDealer()
+			dealer := newDealer()
 			dealer.board.players = players
-			winners := dealer.PlayRound()
+			winners := dealer.playRound()
 
 			assert.Equal(t, River, dealer.board.stage)
 			assert.Len(t, dealer.board.communityCards, 5)
@@ -298,13 +298,13 @@ func TestDealer_PlayRound_EveryoneFolds(t *testing.T) {
 	for _, test := range append(tests, twoPlayerTest) {
 		t.Run(test.name, func(t *testing.T) {
 			players, _ := setupPlayers(test.playersAtSeats)
-			dealer := NewDealer()
+			dealer := newDealer()
 			dealer.board.players = players
-			dealer.board.IterateActivePlayers(func(p *BoardPlayer) {
+			dealer.board.iterateActivePlayers(func(p *playerState) {
 				p.actor.(*OneActionBot).action = FoldAction
 			})
 
-			winners := dealer.PlayRound()
+			winners := dealer.playRound()
 
 			assert.Equal(t, PreFlop, dealer.board.stage)
 			assert.Len(t, dealer.board.communityCards, 0)
@@ -315,17 +315,17 @@ func TestDealer_PlayRound_EveryoneFolds(t *testing.T) {
 }
 
 func TestDealer_CashOutRound_EveryoneElseFolded(t *testing.T) {
-	dealer := NewDealer()
+	dealer := newDealer()
 	dealer.board.pot = 100
 	winners := []*playerForWinnerCalculations{{
-		p: &BoardPlayer{
+		p: &playerState{
 			activePlayerState: activePlayerState{
 				stack:  100,
-				status: BoardPlayerStatusPlaying,
+				status: PlayerStatusPlaying,
 			},
 		},
 	}}
-	dealer.CashOutRound(winners)
+	dealer.cashOutRound(winners)
 
 	assert.Equal(t, 200, winners[0].p.stack)
 }
@@ -341,30 +341,30 @@ func TestDealer_CashOutRound(t *testing.T) {
 			name: "WinningHand",
 			winners: []*playerForWinnerCalculations{
 				{
-					p: &BoardPlayer{
+					p: &playerState{
 						activePlayerState: activePlayerState{
 							stack: 100,
 
-							status: BoardPlayerStatusPlaying},
+							status: PlayerStatusPlaying},
 						chipsEnteredThisRound: 40,
 					},
 					hand: NewHand(GenerateFlush(Ace)),
 				},
 				{
-					p: &BoardPlayer{
+					p: &playerState{
 						activePlayerState: activePlayerState{
 							stack:  100,
-							status: BoardPlayerStatusPlaying,
+							status: PlayerStatusPlaying,
 						},
 						chipsEnteredThisRound: 40,
 					},
 					hand: NewHand(GenerateStraightTo(Ace)),
 				},
 				{
-					p: &BoardPlayer{
+					p: &playerState{
 						activePlayerState: activePlayerState{
 							stack:  100,
-							status: BoardPlayerStatusPlaying,
+							status: PlayerStatusPlaying,
 						},
 
 						chipsEnteredThisRound: 40,
@@ -378,32 +378,32 @@ func TestDealer_CashOutRound(t *testing.T) {
 			name: "WinningHand_AllIn",
 			winners: []*playerForWinnerCalculations{
 				{
-					p: &BoardPlayer{
+					p: &playerState{
 						activePlayerState: activePlayerState{
 							stack:  0,
 							id:     "1",
-							status: BoardPlayerStatusAllIn,
+							status: PlayerStatusAllIn,
 						},
 						chipsEnteredThisRound: 20,
 					},
 					hand: NewHand(GenerateFlush(Ace)),
 				},
 				{
-					p: &BoardPlayer{
+					p: &playerState{
 						activePlayerState: activePlayerState{
 							id:     "2",
-							status: BoardPlayerStatusPlaying,
+							status: PlayerStatusPlaying,
 							stack:  100,
 						},
 						chipsEnteredThisRound: 40},
 					hand: NewHand(GenerateStraightTo(Ace)),
 				},
 				{
-					p: &BoardPlayer{
+					p: &playerState{
 						activePlayerState: activePlayerState{
 							id:     "3",
 							stack:  100,
-							status: BoardPlayerStatusPlaying,
+							status: PlayerStatusPlaying,
 						},
 
 						chipsEnteredThisRound: 10,
@@ -412,11 +412,11 @@ func TestDealer_CashOutRound(t *testing.T) {
 				},
 
 				{
-					p: &BoardPlayer{
+					p: &playerState{
 						activePlayerState: activePlayerState{
 							id:     "4",
 							stack:  100,
-							status: BoardPlayerStatusPlaying,
+							status: PlayerStatusPlaying,
 						},
 						chipsEnteredThisRound: 40,
 					},
@@ -429,33 +429,33 @@ func TestDealer_CashOutRound(t *testing.T) {
 			name: "SplitPot_TwoWay",
 			winners: []*playerForWinnerCalculations{
 				{
-					p: &BoardPlayer{
+					p: &playerState{
 						activePlayerState: activePlayerState{
 							id:     "1",
 							stack:  100,
-							status: BoardPlayerStatusPlaying,
+							status: PlayerStatusPlaying,
 						},
 						chipsEnteredThisRound: 40,
 					},
 					hand: NewHand(GenerateStraightTo(Ace)),
 				},
 				{
-					p: &BoardPlayer{
+					p: &playerState{
 						activePlayerState: activePlayerState{
 							id:     "2",
 							stack:  100,
-							status: BoardPlayerStatusPlaying,
+							status: PlayerStatusPlaying,
 						},
 						chipsEnteredThisRound: 40,
 					},
 					hand: NewHand(GenerateStraightTo(Ace)),
 				},
 				{
-					p: &BoardPlayer{
+					p: &playerState{
 						activePlayerState: activePlayerState{
 							stack:  100,
 							id:     "3",
-							status: BoardPlayerStatusPlaying,
+							status: PlayerStatusPlaying,
 						},
 						chipsEnteredThisRound: 10,
 					},
@@ -463,11 +463,11 @@ func TestDealer_CashOutRound(t *testing.T) {
 				},
 
 				{
-					p: &BoardPlayer{
+					p: &playerState{
 						activePlayerState: activePlayerState{
 							stack:  100,
 							id:     "4",
-							status: BoardPlayerStatusPlaying,
+							status: PlayerStatusPlaying,
 						},
 
 						chipsEnteredThisRound: 40,
@@ -481,45 +481,45 @@ func TestDealer_CashOutRound(t *testing.T) {
 			name: "SplitPot_ThreeWay",
 			winners: []*playerForWinnerCalculations{
 				{
-					p: &BoardPlayer{
+					p: &playerState{
 						activePlayerState: activePlayerState{
 							id:    "1",
 							stack: 100,
 
-							status: BoardPlayerStatusPlaying,
+							status: PlayerStatusPlaying,
 						},
 						chipsEnteredThisRound: 40,
 					},
 					hand: NewHand(GenerateStraightTo(Ace)),
 				},
 				{
-					p: &BoardPlayer{
+					p: &playerState{
 						activePlayerState: activePlayerState{
 							id:     "2",
 							stack:  100,
-							status: BoardPlayerStatusPlaying,
+							status: PlayerStatusPlaying,
 						},
 						chipsEnteredThisRound: 40,
 					},
 					hand: NewHand(GenerateStraightTo(Ace)),
 				},
 				{
-					p: &BoardPlayer{
+					p: &playerState{
 						activePlayerState: activePlayerState{
 							stack:  100,
 							id:     "3",
-							status: BoardPlayerStatusPlaying,
+							status: PlayerStatusPlaying,
 						},
 						chipsEnteredThisRound: 40,
 					},
 					hand: NewHand(GenerateStraightTo(Ace)),
 				},
 				{
-					p: &BoardPlayer{
+					p: &playerState{
 						activePlayerState: activePlayerState{
 							stack:  100,
 							id:     "4",
-							status: BoardPlayerStatusPlaying,
+							status: PlayerStatusPlaying,
 						},
 						chipsEnteredThisRound: 40,
 					},
@@ -533,32 +533,32 @@ func TestDealer_CashOutRound(t *testing.T) {
 			name: "SplitPot_Threeway_OneAllIn",
 			winners: []*playerForWinnerCalculations{
 				{
-					p: &BoardPlayer{
+					p: &playerState{
 						activePlayerState: activePlayerState{
 							id:     "1",
 							stack:  0,
-							status: BoardPlayerStatusAllIn,
+							status: PlayerStatusAllIn,
 						},
 						chipsEnteredThisRound: 30},
 					hand: NewHand(GenerateStraightTo(Ace)),
 				},
 				{
-					p: &BoardPlayer{
+					p: &playerState{
 						activePlayerState: activePlayerState{
 							id:     "2",
 							stack:  100,
-							status: BoardPlayerStatusPlaying,
+							status: PlayerStatusPlaying,
 						},
 						chipsEnteredThisRound: 60},
 					hand: NewHand(GenerateStraightTo(Ace)),
 				},
 				{
-					p: &BoardPlayer{
+					p: &playerState{
 						activePlayerState: activePlayerState{
 							stack: 100,
 							id:    "3",
 
-							status: BoardPlayerStatusPlaying,
+							status: PlayerStatusPlaying,
 						},
 						chipsEnteredThisRound: 60,
 					},
@@ -566,11 +566,11 @@ func TestDealer_CashOutRound(t *testing.T) {
 				},
 
 				{
-					p: &BoardPlayer{
+					p: &playerState{
 						activePlayerState: activePlayerState{
 							stack:  100,
 							id:     "4",
-							status: BoardPlayerStatusPlaying,
+							status: PlayerStatusPlaying,
 						},
 						chipsEnteredThisRound: 60,
 					},
@@ -583,33 +583,33 @@ func TestDealer_CashOutRound(t *testing.T) {
 			name: "SplitPot_Then_Split_Pot",
 			winners: []*playerForWinnerCalculations{
 				{
-					p: &BoardPlayer{
+					p: &playerState{
 						activePlayerState: activePlayerState{
 							id:     "1",
 							stack:  0,
-							status: BoardPlayerStatusAllIn,
+							status: PlayerStatusAllIn,
 						},
 						chipsEnteredThisRound: 30,
 					},
 					hand: NewHand(GenerateStraightTo(Ace)),
 				},
 				{
-					p: &BoardPlayer{
+					p: &playerState{
 						activePlayerState: activePlayerState{
 							id:     "2",
 							stack:  0,
-							status: BoardPlayerStatusPlaying,
+							status: PlayerStatusPlaying,
 						},
 						chipsEnteredThisRound: 30,
 					},
 					hand: NewHand(GenerateStraightTo(Ace)),
 				},
 				{
-					p: &BoardPlayer{
+					p: &playerState{
 						activePlayerState: activePlayerState{
 							stack:  100,
 							id:     "3",
-							status: BoardPlayerStatusPlaying,
+							status: PlayerStatusPlaying,
 						},
 						chipsEnteredThisRound: 60,
 					},
@@ -617,11 +617,11 @@ func TestDealer_CashOutRound(t *testing.T) {
 				},
 
 				{
-					p: &BoardPlayer{
+					p: &playerState{
 						activePlayerState: activePlayerState{
 							stack:  100,
 							id:     "4",
-							status: BoardPlayerStatusPlaying,
+							status: PlayerStatusPlaying,
 						},
 						chipsEnteredThisRound: 60,
 					},
@@ -634,14 +634,14 @@ func TestDealer_CashOutRound(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			dealer := NewDealer()
-			players := make([]*BoardPlayer, len(test.winners))
+			dealer := newDealer()
+			players := make([]*playerState, len(test.winners))
 			for i, w := range test.winners {
 				dealer.board.pot += w.p.chipsEnteredThisRound
 				players[i] = w.p
 			}
 			dealer.board.players = players
-			dealer.CashOutRound(test.winners)
+			dealer.cashOutRound(test.winners)
 
 			for i, w := range test.winners {
 				assert.Equal(t, test.stacks[i], w.p.stack)

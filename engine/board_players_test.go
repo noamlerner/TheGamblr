@@ -1,4 +1,4 @@
-package TheGamblr
+package engine
 
 import (
 	"strconv"
@@ -43,7 +43,7 @@ func TestBoardPlayers_IterateActive(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			players, seen := setupPlayers(test.playersAtSeats)
 
-			players.IterateActive(test.firstPosition, func(p *BoardPlayer) {
+			players.iterateActive(test.firstPosition, func(p *playerState) {
 				seen[p.seatNumber] = true
 			})
 
@@ -111,7 +111,7 @@ func TestBoardPlayers_IterateActiveUntil(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			players, seen := setupPlayers(test.playersAtSeats)
 
-			players.IterateActiveUntil(test.firstPosition, test.lastPosition, func(p *BoardPlayer) {
+			players.iterateActiveUntil(test.firstPosition, test.lastPosition, func(p *playerState) {
 				seen[p.seatNumber] = true
 			})
 
@@ -136,16 +136,16 @@ func isBetween(first, last, check int) bool {
 	}
 }
 
-func setupPlayers(playersAtSeats []int) (BoardPlayers, map[int]bool) {
-	players := make(BoardPlayers, 8)
+func setupPlayers(playersAtSeats []int) (PlayerStates, map[int]bool) {
+	players := make(PlayerStates, 8)
 	seen := map[int]bool{}
 	for _, seat := range playersAtSeats {
-		players[seat] = &BoardPlayer{
+		players[seat] = &playerState{
 			activePlayerState: activePlayerState{
 				id:         strconv.Itoa(seat),
 				stack:      100,
 				seatNumber: seat,
-				status:     BoardPlayerStatusPlaying,
+				status:     PlayerStatusPlaying,
 			},
 			actor: &OneActionBot{action: CallAction},
 		}
