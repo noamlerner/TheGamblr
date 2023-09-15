@@ -1,9 +1,9 @@
 package engine
 
-type Action int
+type ActionType int
 
 const (
-	FoldAction Action = iota
+	FoldAction ActionType = iota
 	CallAction
 	RaiseAction
 	CheckFoldAction
@@ -12,7 +12,7 @@ const (
 )
 
 var (
-	actionVerb = map[Action]string{
+	actionVerb = map[ActionType]string{
 		FoldAction:      "Folds",
 		CallAction:      "Calls",
 		RaiseAction:     "Raises To",
@@ -22,6 +22,6 @@ var (
 	}
 )
 
-func (a Action) ActionVerb() string {
+func (a ActionType) ActionVerb() string {
 	return actionVerb[a]
 }

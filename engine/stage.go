@@ -8,14 +8,16 @@ const (
 	Flop
 	Turn
 	River
+	RoundOver
 )
 
 var (
 	stageName = map[Stage]string{
-		PreFlop: "PreFlop",
-		Flop:    "Flop",
-		Turn:    "Turn",
-		River:   "River",
+		PreFlop:   "PreFlop",
+		Flop:      "Flop",
+		Turn:      "Turn",
+		River:     "River",
+		RoundOver: "RoundOver",
 	}
 )
 

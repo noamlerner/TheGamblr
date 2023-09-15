@@ -1,8 +1,8 @@
 package engine
 
 type boardState struct {
-	activeBoard
-	players PlayerStates
+	visibleBoardState
+	players playerStates
 	// Counts players that are not folded
 	playersInRound int
 	// Counts players that are not folded and are not AllIn
@@ -13,7 +13,7 @@ type boardState struct {
 
 func newBoardState() *boardState {
 	return &boardState{
-		activeBoard: activeBoard{
+		visibleBoardState: visibleBoardState{
 			communityCards: make([]*Card, 0, 5),
 		},
 		players: make([]*playerState, 8),
@@ -26,20 +26,21 @@ func (b *boardState) addCommunityCards(card ...*Card) {
 }
 
 // seatPlayer finds an open seat for the player and puts him there.
-func (b *boardState) seatPlayer(id string, bot BotPlayer, startingStack int) {
+func (b *boardState) seatPlayer(id string, bot BotPlayer, startingStack int) int {
 	for i, p := range b.players {
 		if p == nil {
 			b.players[i] = &playerState{
-				activePlayerState: activePlayerState{
+				visiblePlayerState: visiblePlayerState{
 					seatNumber: i,
 					id:         id,
 					stack:      startingStack,
 					status:     PlayerStatusPlaying,
 				},
 				actor: bot}
-			return
+			return i
 		}
 	}
+	return -1
 }
 
 // nextActiveSeat returns the index of the next seat which has a player in it which is still in the round.
@@ -90,7 +91,7 @@ func (b *boardState) playerAtSeat(seat int) *playerState {
 	return b.players[seat]
 }
 
-// moveSmallBlindButton moves the dealer button to the next non-empty seat.
+// moveSmallBlindButton moves the Dealer button to the next non-empty seat.
 func (b *boardState) moveSmallBlindButton() {
 	b.smallBlindButton = b.nextActiveSeat(b.smallBlindButton)
 }
@@ -131,7 +132,7 @@ func (b *boardState) addToPot(amount int) {
 	b.pot += amount
 }
 
-func (b *boardState) iterateActivePlayers(f PlayerStateFunc) {
+func (b *boardState) iterateActivePlayers(f playerStateFunc) {
 	b.playersInGame = 0
 	b.players.iterateActive(b.smallBlindButton, func(p *playerState) {
 		b.playersInGame++
@@ -139,7 +140,7 @@ func (b *boardState) iterateActivePlayers(f PlayerStateFunc) {
 	})
 }
 
-func (b *boardState) iterateActivePlayersFromTo(fromSeat, toSeat int, f PlayerStateFunc) {
+func (b *boardState) iterateActivePlayersFromTo(fromSeat, toSeat int, f playerStateFunc) {
 	b.playersInGame = 0
 	b.players.iterateActiveUntil(fromSeat, toSeat, func(p *playerState) {
 		f(p)
@@ -147,10 +148,13 @@ func (b *boardState) iterateActivePlayersFromTo(fromSeat, toSeat int, f PlayerSt
 	})
 }
 
-func (b *boardState) state() ActiveBoard {
-	b.activeBoard.vPlayers = make([]ActivePlayerState, 8)
+func (b *boardState) state() BoardState {
+	b.visibleBoardState.vPlayers = make([]PlayerState, 8)
 	for i, p := range b.players {
-		b.activeBoard.vPlayers[i] = p.visiblePlayerState()
+		if p == nil {
+			continue
+		}
+		b.visibleBoardState.vPlayers[i] = p.visibleState()
 	}
-	return &b.activeBoard
+	return &b.visibleBoardState
 }

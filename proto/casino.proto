@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package thegamblr;
+option go_package = "thegamblr/proto";
+
+import "board_state.proto";
+import "action.proto";
+import "card.proto";
+
+message ReceiveUpdatesRequest{
+  string token = 1;
+}
+
+message ReceiveUpdatesResponse{
+  // The current state of the board. Only gets included once per stage. So you will get this once PreFlop, and then it
+  // will be null until the Flop.
+  BoardState board_state = 1;
+  // These will tell you all actions player's took since the last response you received.
+  repeated Action action_updates = 2;
+  // If this bool is true, it is your turn to act. You need to make a call to Act.
+  bool is_my_action = 3;
+  // You will always get this when you get the PreFlop board_state. Otherwise this will be nil.
+  repeated Card my_hand = 4;
+}
+
+message ActRequest {
+  // the token you recieved in the JoinGameRequest. If you do not have this, your request will be ignored.
+  string token = 1;
+  // What action are you taking? If this is invalid you will be folded.
+  ActionType action_type = 2;
+  // You only need to include this if you choose Raise and you want to Raise anything other than the min raise.
+  // If this is less than the min raise, it will automatically be increased to the min raise. It will be ignored in
+  // all other cases.
+  int64 amount = 3;
+}
+
+message ActResponse {}
+
+message JoniGameRequest{
+  // Give your player a name.
+  string player_id = 1;
+  // What game are you joining?
+  string game_id = 2;
+}
+
+message JoniGameResponse {
+  // Keep this token for future requests.
+  string token = 1;
+  // This is the seat you have been placed it.
+  uint32 seat_number = 2;
+  // Your ID, should match what was in your request unless there was a conflict.
+  string player_id = 3;
+}
+
+message CreateGameRequest {
+  // how much is the small blind? big blind is 2x. Defaults to 5 if not set (0)
+  uint64 small_blind = 1;
+  // NumRounds defines how many rounds will be played in this game. If this is -1, we will play until there is only
+  // one player left with chips. Defaults to 200 if not set (0).
+  uint64 num_rounds = 2;
+  // how many chips does each player start with? Defaults to 1000 if not set (0).
+  uint64 starting_stack = 3;
+}
+
+message CreateGameResponse {
+  // You and others will need this to join the game.
+  string game_id = 1;
+}
+
+service Casino {
+  // CreateGame creates a game that players can join. The response returns a game_id which is needed by players
+  // to register.
+  rpc CreateGame(CreateGameRequest) returns (CreateGameResponse);
+  // JoinGame allows players to join a game created by CreateGame. A player provided PlayerId is required.
+  // In the response object, the player will receive a player_id which should match unless it was taken, in which case
+  // it will have a number appended to it. The response also provides the players seat number and a token. The token
+  // is necessary to pass up in Action requests to verify who is performing the action.
+  rpc JoinGame(JoniGameRequest) returns (JoniGameResponse);
+  // ReceiveUpdates will return a list of Actions that have occurred since the last time this was called. This should
+  // be constantly polled. It will also return a bool indicating if it is this player's turn. If it is, a call to Act
+  // is expected.
+  rpc ReceiveUpdates(ReceiveUpdatesRequest) returns (ReceiveUpdatesResponse);
+  // Act allows a player to specify the action they want to take. Invalid actions will result in a Fold.
+  // If a player tries to put in more chips than they have, they will be put all in. If a player tries to Raise with
+  // less chips than is the minimum raise, they will automatically raise the minimum raise.
+  rpc Act(ActRequest) returns (ActResponse);
+}

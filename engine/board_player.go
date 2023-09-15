@@ -1,7 +1,7 @@
 package engine
 
 type playerState struct {
-	activePlayerState
+	visiblePlayerState
 	// Chips entered on PreFlop, Flop, Turn or River.
 	chipsEnteredThisStage int
 	// Chips entered anytime since cards were received.
@@ -18,7 +18,7 @@ func (b *playerState) fold() {
 	b.status = PlayerStatusFolded
 }
 
-func (b *playerState) receiveCards(cards Cards, blindAmount int, boardState ActiveBoard) int {
+func (b *playerState) receiveCards(cards Cards, blindAmount int, boardState BoardState) int {
 	b.chipsEnteredThisStage = 0
 	b.cards = cards
 	b.actor.ReceiveCards(cards, blindAmount, boardState)
@@ -64,9 +64,9 @@ func (b *playerState) removeChips(amount int) int {
 	return amount
 }
 
-func (b *playerState) visiblePlayerState() *activePlayerState {
+func (b *playerState) visibleState() *visiblePlayerState {
 	if b == nil {
 		return nil
 	}
-	return &b.activePlayerState
+	return &b.visiblePlayerState
 }

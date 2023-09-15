@@ -2,15 +2,17 @@ package engine
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-var names = []string{"Noam", "Bean", "TheGamblr"}
+var names = []string{"Noam", "Bean", "TheGamblr", "Bob", "Lulu", "Shlomi", "Lamp", "Leica"}
 
 func TestFullGame(t *testing.T) {
 	config := NewDefaultGameConfig()
 	config.LogLevel = LogLevelCards
 	config.NumRounds = 4
-	dealer := Dealer(config)
+	dealer := NewDealer(config)
 	dealer.SeatPlayer("Noam", NewRandomActionBot())
 	dealer.SeatPlayer("Bean", NewRandomActionBot())
 	dealer.SeatPlayer("TheGamblr", NewRandomActionBot())
@@ -19,11 +21,11 @@ func TestFullGame(t *testing.T) {
 
 func TestSequence(t *testing.T) {
 	numPlayers := 3
-	sequence := []Action{RaiseAction, RaiseAction, RaiseAction, CallAction}
+	sequence := []ActionType{RaiseAction, RaiseAction, RaiseAction, CallAction}
 	config := NewDefaultGameConfig()
 	config.LogLevel = LogLevelCards
 	config.NumRounds = 10
-	d := Dealer(config)
+	d := NewDealer(config)
 	for i := 0; i < numPlayers; i++ {
 		d.SeatPlayer(names[i], &SequenceOfActionsBot{})
 	}
@@ -33,7 +35,12 @@ func TestSequence(t *testing.T) {
 		bot.actions = append(bot.actions, action)
 	}
 	d.board.smallBlindButton = 3
-	d.playRound()
+	d.newRound()
+	// PreFlop betting
+	d.betting()
+	assert.Equal(t, 2, d.board.players[0].actor.(*SequenceOfActionsBot).numCalled)
+	assert.Equal(t, 1, d.board.players[1].actor.(*SequenceOfActionsBot).numCalled)
+	assert.Equal(t, 2, d.board.players[2].actor.(*SequenceOfActionsBot).numCalled)
 }
 
 func TestHardcodedCards(t *testing.T) {
@@ -54,7 +61,7 @@ func TestHardcodedCards(t *testing.T) {
 	config := NewDefaultGameConfig()
 	config.LogLevel = LogLevelCards
 	config.NumRounds = 10
-	d := Dealer(config)
+	d := NewDealer(config)
 	for i := 0; i < numPlayers; i++ {
 		d.SeatPlayer(names[i], &OneActionBot{action: CallAction})
 	}

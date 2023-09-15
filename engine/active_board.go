@@ -1,6 +1,6 @@
 package engine
 
-type ActiveBoard interface {
+type BoardState interface {
 	// CommunityCards are the cards currently on the board. The first three cards will always be the flop, then the
 	// turn, then the river.
 	CommunityCards() Cards
@@ -11,34 +11,34 @@ type ActiveBoard interface {
 	// SmallBlindButton returns the index of the player in the Players slice that corresponds to the Small Blind Button.
 	SmallBlindButton() int
 	// Players return the array of all players in the game.
-	Players() []ActivePlayerState
+	Players() []PlayerState
 }
 
-// activeBoard is the board that all players can see during and at the start of a round.
-type activeBoard struct {
+// visibleBoardState is the board that all players can see during and at the start of a round.
+type visibleBoardState struct {
 	communityCards   []*Card
 	pot              int
 	stage            Stage
 	smallBlindButton int
-	vPlayers         []ActivePlayerState
+	vPlayers         []PlayerState
 }
 
-func (v *activeBoard) CommunityCards() Cards {
+func (v *visibleBoardState) CommunityCards() Cards {
 	return v.communityCards
 }
 
-func (v *activeBoard) Pot() int {
+func (v *visibleBoardState) Pot() int {
 	return v.pot
 }
 
-func (v *activeBoard) Stage() Stage {
+func (v *visibleBoardState) Stage() Stage {
 	return v.stage
 }
 
-func (v *activeBoard) SmallBlindButton() int {
+func (v *visibleBoardState) SmallBlindButton() int {
 	return v.smallBlindButton
 }
 
-func (v *activeBoard) Players() []ActivePlayerState {
+func (v *visibleBoardState) Players() []PlayerState {
 	return v.vPlayers
 }
