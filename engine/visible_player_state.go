@@ -21,6 +21,16 @@ type PlayerState interface {
 	RoundEndStats() PlayerRoundResults
 }
 
+func NilPlayerState() PlayerState {
+	return &visiblePlayerState{
+		stack:         0,
+		status:        PlayerStatusOut,
+		seatNumber:    -1,
+		id:            "",
+		roundEndStats: nil,
+	}
+}
+
 // visiblePlayerState is the struct that is visible to everyone
 type visiblePlayerState struct {
 	stack         int
@@ -31,22 +41,37 @@ type visiblePlayerState struct {
 }
 
 func (v *visiblePlayerState) Stack() int {
+	if v == nil {
+		return 0
+	}
 	return v.stack
 }
 
 func (v *visiblePlayerState) Status() PlayerStatus {
+	if v == nil {
+		return PlayerStatusOut
+	}
 	return v.status
 }
 
 func (v *visiblePlayerState) SeatNumber() int {
+	if v == nil {
+		return -1
+	}
 	return v.seatNumber
 }
 
 func (v *visiblePlayerState) Id() string {
+	if v == nil {
+		return ""
+	}
 	return v.id
 }
 
 func (v *visiblePlayerState) RoundEndStats() PlayerRoundResults {
+	if v == nil {
+		return nil
+	}
 	return v.roundEndStats
 }
 
