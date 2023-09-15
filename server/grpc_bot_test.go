@@ -11,7 +11,7 @@ import (
 )
 
 func TestAct(t *testing.T) {
-	bot := newGrpcBot()
+	bot := newGrpcBot().(*grpcBot)
 
 	var action engine.ActionType
 	var amount int
@@ -35,7 +35,7 @@ func TestAct(t *testing.T) {
 
 func TestFlushUpdates(t *testing.T) {
 
-	bot := newGrpcBot()
+	bot := newGrpcBot().(*grpcBot)
 	hand := engine.GenerateRandHand()[:2]
 	boardState := engine.TestBoardState()
 	bot.ReceiveCards(hand)
@@ -45,8 +45,8 @@ func TestFlushUpdates(t *testing.T) {
 		LeftToCall: 10,
 	}
 	bot.SeeBoardState(boardState)
-	bot.ActionUpdate(engine.NewAction(engine.CallAction, nil, 0))
-	bot.ActionUpdate(engine.NewAction(engine.RaiseAction, nil, 10))
+	bot.ActionUpdate(engine.NewAction(engine.CallAction, nil, 0), boardState)
+	bot.ActionUpdate(engine.NewAction(engine.RaiseAction, nil, 10), boardState)
 	updates := bot.FlushUpdates(0)
 	assert.Equal(t, protoConv.Cards(hand), updates.MyHand)
 	assert.NotNil(t, bot.actionPacket)

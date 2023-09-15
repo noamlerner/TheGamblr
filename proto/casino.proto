@@ -17,13 +17,13 @@ message MyActionPacket {
 }
 
 message Update {
-  oneof update {
-    // The current state of the board. Only gets included once per stage. So you will get this once PreFlop, and then it
-    // will be null until the Flop.
-    BoardState board_state = 1;
-    // These will tell you all actions player's took since the last response you received.
-    Action action_update = 2;
-  }
+  // The current state of the board. Gets included with every update. If an action_update is present, this is the
+  // board state after the action_update has been applied.
+  BoardState board_state = 1;
+  // These will tell you all actions player's took since the last response you received. This will be nil 4 times per
+  // round. In the beginning of the Flop, Turn and River, and once at the end of the round. These updates are only
+  // to tell you of cards and results.
+  Action action_update = 2;
   // The sequence number of this update. Provide the last one you received in your next request to avoid getting
   // repeats.
   uint64 sequence_number = 3;

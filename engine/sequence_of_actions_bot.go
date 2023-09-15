@@ -22,5 +22,5 @@ func (c *SequenceOfActionsBot) Act(int, int, int) (ActionType, int) {
 	return c.actions[i], 10
 }
 
-func (c *SequenceOfActionsBot) ActionUpdate(action Action) {
+func (c *SequenceOfActionsBot) ActionUpdate(action Action, state BoardState) {
 }

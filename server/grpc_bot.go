@@ -17,7 +17,7 @@ type grpcBot struct {
 	actionChannel chan engine.Action
 }
 
-func newGrpcBot() *grpcBot {
+func newGrpcBot() engine.BotPlayer {
 	return &grpcBot{
 		mutex:         sync.RWMutex{},
 		actionMutex:   sync.Mutex{},
@@ -34,9 +34,7 @@ func (g *grpcBot) SeeBoardState(boardState engine.BoardState) {
 	g.mutex.Lock()
 	defer g.mutex.Unlock()
 	g.updates = append(g.updates, &proto.Update{
-		Update: &proto.Update_BoardState{
-			BoardState: protoConv.BoardState(boardState),
-		},
+		BoardState:     protoConv.BoardState(boardState),
 		SequenceNumber: uint64(len(g.updates)),
 	})
 }
@@ -77,11 +75,12 @@ func (g *grpcBot) InputAction(request *proto.ActRequest) {
 	g.actionChannel <- engine.NewAction(engine.ActionType(request.ActionType), nil, int(request.Amount))
 }
 
-func (g *grpcBot) ActionUpdate(action engine.Action) {
+func (g *grpcBot) ActionUpdate(action engine.Action, boardState engine.BoardState) {
 	g.mutex.Lock()
 	defer g.mutex.Unlock()
 	g.updates = append(g.updates, &proto.Update{
-		Update:         &proto.Update_ActionUpdate{ActionUpdate: protoConv.Action(action)},
+		BoardState:     protoConv.BoardState(boardState),
+		ActionUpdate:   protoConv.Action(action),
 		SequenceNumber: uint64(len(g.updates)),
 	})
 }

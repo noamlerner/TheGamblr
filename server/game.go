@@ -30,7 +30,7 @@ func (g *game) RuGame() {
 }
 func (g *game) seatPlayer(id string) (string, int) {
 	token := uuid.Must(uuid.NewRandom()).String()
-	grpcBot := newGrpcBot()
+	grpcBot := newGrpcBot().(*grpcBot)
 	seatNumber := g.dealer.SeatPlayer(id, grpcBot)
 	g.players[token] = grpcBot
 	return token, seatNumber

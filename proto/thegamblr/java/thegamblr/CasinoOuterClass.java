@@ -711,8 +711,8 @@ public final class CasinoOuterClass {
 
     /**
      * <pre>
-     * The current state of the board. Only gets included once per stage. So you will get this once PreFlop, and then it
-     * will be null until the Flop.
+     * The current state of the board. Gets included with every update. If an action_update is present, this is the
+     * board state after the action_update has been applied.
      * </pre>
      *
      * <code>.thegamblr.BoardState board_state = 1;</code>
@@ -721,8 +721,8 @@ public final class CasinoOuterClass {
     boolean hasBoardState();
     /**
      * <pre>
-     * The current state of the board. Only gets included once per stage. So you will get this once PreFlop, and then it
-     * will be null until the Flop.
+     * The current state of the board. Gets included with every update. If an action_update is present, this is the
+     * board state after the action_update has been applied.
      * </pre>
      *
      * <code>.thegamblr.BoardState board_state = 1;</code>
@@ -731,8 +731,8 @@ public final class CasinoOuterClass {
     thegamblr.BoardStateOuterClass.BoardState getBoardState();
     /**
      * <pre>
-     * The current state of the board. Only gets included once per stage. So you will get this once PreFlop, and then it
-     * will be null until the Flop.
+     * The current state of the board. Gets included with every update. If an action_update is present, this is the
+     * board state after the action_update has been applied.
      * </pre>
      *
      * <code>.thegamblr.BoardState board_state = 1;</code>
@@ -741,7 +741,9 @@ public final class CasinoOuterClass {
 
     /**
      * <pre>
-     * These will tell you all actions player's took since the last response you received.
+     * These will tell you all actions player's took since the last response you received. This will be nil 4 times per
+     * round. In the beginning of the Flop, Turn and River, and once at the end of the round. These updates are only
+     * to tell you of cards and results.
      * </pre>
      *
      * <code>.thegamblr.Action action_update = 2;</code>
@@ -750,7 +752,9 @@ public final class CasinoOuterClass {
     boolean hasActionUpdate();
     /**
      * <pre>
-     * These will tell you all actions player's took since the last response you received.
+     * These will tell you all actions player's took since the last response you received. This will be nil 4 times per
+     * round. In the beginning of the Flop, Turn and River, and once at the end of the round. These updates are only
+     * to tell you of cards and results.
      * </pre>
      *
      * <code>.thegamblr.Action action_update = 2;</code>
@@ -759,7 +763,9 @@ public final class CasinoOuterClass {
     thegamblr.ActionOuterClass.Action getActionUpdate();
     /**
      * <pre>
-     * These will tell you all actions player's took since the last response you received.
+     * These will tell you all actions player's took since the last response you received. This will be nil 4 times per
+     * round. In the beginning of the Flop, Turn and River, and once at the end of the round. These updates are only
+     * to tell you of cards and results.
      * </pre>
      *
      * <code>.thegamblr.Action action_update = 2;</code>
@@ -776,8 +782,6 @@ public final class CasinoOuterClass {
      * @return The sequenceNumber.
      */
     long getSequenceNumber();
-
-    public thegamblr.CasinoOuterClass.Update.UpdateCase getUpdateCase();
   }
   /**
    * Protobuf type {@code thegamblr.Update}
@@ -826,30 +830,28 @@ public final class CasinoOuterClass {
               break;
             case 10: {
               thegamblr.BoardStateOuterClass.BoardState.Builder subBuilder = null;
-              if (updateCase_ == 1) {
-                subBuilder = ((thegamblr.BoardStateOuterClass.BoardState) update_).toBuilder();
+              if (boardState_ != null) {
+                subBuilder = boardState_.toBuilder();
               }
-              update_ =
-                  input.readMessage(thegamblr.BoardStateOuterClass.BoardState.parser(), extensionRegistry);
+              boardState_ = input.readMessage(thegamblr.BoardStateOuterClass.BoardState.parser(), extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom((thegamblr.BoardStateOuterClass.BoardState) update_);
-                update_ = subBuilder.buildPartial();
+                subBuilder.mergeFrom(boardState_);
+                boardState_ = subBuilder.buildPartial();
               }
-              updateCase_ = 1;
+
               break;
             }
             case 18: {
               thegamblr.ActionOuterClass.Action.Builder subBuilder = null;
-              if (updateCase_ == 2) {
-                subBuilder = ((thegamblr.ActionOuterClass.Action) update_).toBuilder();
+              if (actionUpdate_ != null) {
+                subBuilder = actionUpdate_.toBuilder();
               }
-              update_ =
-                  input.readMessage(thegamblr.ActionOuterClass.Action.parser(), extensionRegistry);
+              actionUpdate_ = input.readMessage(thegamblr.ActionOuterClass.Action.parser(), extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom((thegamblr.ActionOuterClass.Action) update_);
-                update_ = subBuilder.buildPartial();
+                subBuilder.mergeFrom(actionUpdate_);
+                actionUpdate_ = subBuilder.buildPartial();
               }
-              updateCase_ = 2;
+
               break;
             }
             case 24: {
@@ -889,52 +891,12 @@ public final class CasinoOuterClass {
               thegamblr.CasinoOuterClass.Update.class, thegamblr.CasinoOuterClass.Update.Builder.class);
     }
 
-    private int updateCase_ = 0;
-    private java.lang.Object update_;
-    public enum UpdateCase
-        implements com.google.protobuf.Internal.EnumLite,
-            com.google.protobuf.AbstractMessage.InternalOneOfEnum {
-      BOARD_STATE(1),
-      ACTION_UPDATE(2),
-      UPDATE_NOT_SET(0);
-      private final int value;
-      private UpdateCase(int value) {
-        this.value = value;
-      }
-      /**
-       * @param value The number of the enum to look for.
-       * @return The enum associated with the given number.
-       * @deprecated Use {@link #forNumber(int)} instead.
-       */
-      @java.lang.Deprecated
-      public static UpdateCase valueOf(int value) {
-        return forNumber(value);
-      }
-
-      public static UpdateCase forNumber(int value) {
-        switch (value) {
-          case 1: return BOARD_STATE;
-          case 2: return ACTION_UPDATE;
-          case 0: return UPDATE_NOT_SET;
-          default: return null;
-        }
-      }
-      public int getNumber() {
-        return this.value;
-      }
-    };
-
-    public UpdateCase
-    getUpdateCase() {
-      return UpdateCase.forNumber(
-          updateCase_);
-    }
-
     public static final int BOARD_STATE_FIELD_NUMBER = 1;
+    private thegamblr.BoardStateOuterClass.BoardState boardState_;
     /**
      * <pre>
-     * The current state of the board. Only gets included once per stage. So you will get this once PreFlop, and then it
-     * will be null until the Flop.
+     * The current state of the board. Gets included with every update. If an action_update is present, this is the
+     * board state after the action_update has been applied.
      * </pre>
      *
      * <code>.thegamblr.BoardState board_state = 1;</code>
@@ -942,12 +904,12 @@ public final class CasinoOuterClass {
      */
     @java.lang.Override
     public boolean hasBoardState() {
-      return updateCase_ == 1;
+      return boardState_ != null;
     }
     /**
      * <pre>
-     * The current state of the board. Only gets included once per stage. So you will get this once PreFlop, and then it
-     * will be null until the Flop.
+     * The current state of the board. Gets included with every update. If an action_update is present, this is the
+     * board state after the action_update has been applied.
      * </pre>
      *
      * <code>.thegamblr.BoardState board_state = 1;</code>
@@ -955,31 +917,28 @@ public final class CasinoOuterClass {
      */
     @java.lang.Override
     public thegamblr.BoardStateOuterClass.BoardState getBoardState() {
-      if (updateCase_ == 1) {
-         return (thegamblr.BoardStateOuterClass.BoardState) update_;
-      }
-      return thegamblr.BoardStateOuterClass.BoardState.getDefaultInstance();
+      return boardState_ == null ? thegamblr.BoardStateOuterClass.BoardState.getDefaultInstance() : boardState_;
     }
     /**
      * <pre>
-     * The current state of the board. Only gets included once per stage. So you will get this once PreFlop, and then it
-     * will be null until the Flop.
+     * The current state of the board. Gets included with every update. If an action_update is present, this is the
+     * board state after the action_update has been applied.
      * </pre>
      *
      * <code>.thegamblr.BoardState board_state = 1;</code>
      */
     @java.lang.Override
     public thegamblr.BoardStateOuterClass.BoardStateOrBuilder getBoardStateOrBuilder() {
-      if (updateCase_ == 1) {
-         return (thegamblr.BoardStateOuterClass.BoardState) update_;
-      }
-      return thegamblr.BoardStateOuterClass.BoardState.getDefaultInstance();
+      return getBoardState();
     }
 
     public static final int ACTION_UPDATE_FIELD_NUMBER = 2;
+    private thegamblr.ActionOuterClass.Action actionUpdate_;
     /**
      * <pre>
-     * These will tell you all actions player's took since the last response you received.
+     * These will tell you all actions player's took since the last response you received. This will be nil 4 times per
+     * round. In the beginning of the Flop, Turn and River, and once at the end of the round. These updates are only
+     * to tell you of cards and results.
      * </pre>
      *
      * <code>.thegamblr.Action action_update = 2;</code>
@@ -987,11 +946,13 @@ public final class CasinoOuterClass {
      */
     @java.lang.Override
     public boolean hasActionUpdate() {
-      return updateCase_ == 2;
+      return actionUpdate_ != null;
     }
     /**
      * <pre>
-     * These will tell you all actions player's took since the last response you received.
+     * These will tell you all actions player's took since the last response you received. This will be nil 4 times per
+     * round. In the beginning of the Flop, Turn and River, and once at the end of the round. These updates are only
+     * to tell you of cards and results.
      * </pre>
      *
      * <code>.thegamblr.Action action_update = 2;</code>
@@ -999,24 +960,20 @@ public final class CasinoOuterClass {
      */
     @java.lang.Override
     public thegamblr.ActionOuterClass.Action getActionUpdate() {
-      if (updateCase_ == 2) {
-         return (thegamblr.ActionOuterClass.Action) update_;
-      }
-      return thegamblr.ActionOuterClass.Action.getDefaultInstance();
+      return actionUpdate_ == null ? thegamblr.ActionOuterClass.Action.getDefaultInstance() : actionUpdate_;
     }
     /**
      * <pre>
-     * These will tell you all actions player's took since the last response you received.
+     * These will tell you all actions player's took since the last response you received. This will be nil 4 times per
+     * round. In the beginning of the Flop, Turn and River, and once at the end of the round. These updates are only
+     * to tell you of cards and results.
      * </pre>
      *
      * <code>.thegamblr.Action action_update = 2;</code>
      */
     @java.lang.Override
     public thegamblr.ActionOuterClass.ActionOrBuilder getActionUpdateOrBuilder() {
-      if (updateCase_ == 2) {
-         return (thegamblr.ActionOuterClass.Action) update_;
-      }
-      return thegamblr.ActionOuterClass.Action.getDefaultInstance();
+      return getActionUpdate();
     }
 
     public static final int SEQUENCE_NUMBER_FIELD_NUMBER = 3;
@@ -1049,11 +1006,11 @@ public final class CasinoOuterClass {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (updateCase_ == 1) {
-        output.writeMessage(1, (thegamblr.BoardStateOuterClass.BoardState) update_);
+      if (boardState_ != null) {
+        output.writeMessage(1, getBoardState());
       }
-      if (updateCase_ == 2) {
-        output.writeMessage(2, (thegamblr.ActionOuterClass.Action) update_);
+      if (actionUpdate_ != null) {
+        output.writeMessage(2, getActionUpdate());
       }
       if (sequenceNumber_ != 0L) {
         output.writeUInt64(3, sequenceNumber_);
@@ -1067,13 +1024,13 @@ public final class CasinoOuterClass {
       if (size != -1) return size;
 
       size = 0;
-      if (updateCase_ == 1) {
+      if (boardState_ != null) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, (thegamblr.BoardStateOuterClass.BoardState) update_);
+          .computeMessageSize(1, getBoardState());
       }
-      if (updateCase_ == 2) {
+      if (actionUpdate_ != null) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, (thegamblr.ActionOuterClass.Action) update_);
+          .computeMessageSize(2, getActionUpdate());
       }
       if (sequenceNumber_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
@@ -1094,21 +1051,18 @@ public final class CasinoOuterClass {
       }
       thegamblr.CasinoOuterClass.Update other = (thegamblr.CasinoOuterClass.Update) obj;
 
+      if (hasBoardState() != other.hasBoardState()) return false;
+      if (hasBoardState()) {
+        if (!getBoardState()
+            .equals(other.getBoardState())) return false;
+      }
+      if (hasActionUpdate() != other.hasActionUpdate()) return false;
+      if (hasActionUpdate()) {
+        if (!getActionUpdate()
+            .equals(other.getActionUpdate())) return false;
+      }
       if (getSequenceNumber()
           != other.getSequenceNumber()) return false;
-      if (!getUpdateCase().equals(other.getUpdateCase())) return false;
-      switch (updateCase_) {
-        case 1:
-          if (!getBoardState()
-              .equals(other.getBoardState())) return false;
-          break;
-        case 2:
-          if (!getActionUpdate()
-              .equals(other.getActionUpdate())) return false;
-          break;
-        case 0:
-        default:
-      }
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -1120,21 +1074,17 @@ public final class CasinoOuterClass {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasBoardState()) {
+        hash = (37 * hash) + BOARD_STATE_FIELD_NUMBER;
+        hash = (53 * hash) + getBoardState().hashCode();
+      }
+      if (hasActionUpdate()) {
+        hash = (37 * hash) + ACTION_UPDATE_FIELD_NUMBER;
+        hash = (53 * hash) + getActionUpdate().hashCode();
+      }
       hash = (37 * hash) + SEQUENCE_NUMBER_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           getSequenceNumber());
-      switch (updateCase_) {
-        case 1:
-          hash = (37 * hash) + BOARD_STATE_FIELD_NUMBER;
-          hash = (53 * hash) + getBoardState().hashCode();
-          break;
-        case 2:
-          hash = (37 * hash) + ACTION_UPDATE_FIELD_NUMBER;
-          hash = (53 * hash) + getActionUpdate().hashCode();
-          break;
-        case 0:
-        default:
-      }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -1268,10 +1218,20 @@ public final class CasinoOuterClass {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        if (boardStateBuilder_ == null) {
+          boardState_ = null;
+        } else {
+          boardState_ = null;
+          boardStateBuilder_ = null;
+        }
+        if (actionUpdateBuilder_ == null) {
+          actionUpdate_ = null;
+        } else {
+          actionUpdate_ = null;
+          actionUpdateBuilder_ = null;
+        }
         sequenceNumber_ = 0L;
 
-        updateCase_ = 0;
-        update_ = null;
         return this;
       }
 
@@ -1298,22 +1258,17 @@ public final class CasinoOuterClass {
       @java.lang.Override
       public thegamblr.CasinoOuterClass.Update buildPartial() {
         thegamblr.CasinoOuterClass.Update result = new thegamblr.CasinoOuterClass.Update(this);
-        if (updateCase_ == 1) {
-          if (boardStateBuilder_ == null) {
-            result.update_ = update_;
-          } else {
-            result.update_ = boardStateBuilder_.build();
-          }
+        if (boardStateBuilder_ == null) {
+          result.boardState_ = boardState_;
+        } else {
+          result.boardState_ = boardStateBuilder_.build();
         }
-        if (updateCase_ == 2) {
-          if (actionUpdateBuilder_ == null) {
-            result.update_ = update_;
-          } else {
-            result.update_ = actionUpdateBuilder_.build();
-          }
+        if (actionUpdateBuilder_ == null) {
+          result.actionUpdate_ = actionUpdate_;
+        } else {
+          result.actionUpdate_ = actionUpdateBuilder_.build();
         }
         result.sequenceNumber_ = sequenceNumber_;
-        result.updateCase_ = updateCase_;
         onBuilt();
         return result;
       }
@@ -1362,21 +1317,14 @@ public final class CasinoOuterClass {
 
       public Builder mergeFrom(thegamblr.CasinoOuterClass.Update other) {
         if (other == thegamblr.CasinoOuterClass.Update.getDefaultInstance()) return this;
+        if (other.hasBoardState()) {
+          mergeBoardState(other.getBoardState());
+        }
+        if (other.hasActionUpdate()) {
+          mergeActionUpdate(other.getActionUpdate());
+        }
         if (other.getSequenceNumber() != 0L) {
           setSequenceNumber(other.getSequenceNumber());
-        }
-        switch (other.getUpdateCase()) {
-          case BOARD_STATE: {
-            mergeBoardState(other.getBoardState());
-            break;
-          }
-          case ACTION_UPDATE: {
-            mergeActionUpdate(other.getActionUpdate());
-            break;
-          }
-          case UPDATE_NOT_SET: {
-            break;
-          }
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -1406,64 +1354,42 @@ public final class CasinoOuterClass {
         }
         return this;
       }
-      private int updateCase_ = 0;
-      private java.lang.Object update_;
-      public UpdateCase
-          getUpdateCase() {
-        return UpdateCase.forNumber(
-            updateCase_);
-      }
 
-      public Builder clearUpdate() {
-        updateCase_ = 0;
-        update_ = null;
-        onChanged();
-        return this;
-      }
-
-
+      private thegamblr.BoardStateOuterClass.BoardState boardState_;
       private com.google.protobuf.SingleFieldBuilderV3<
           thegamblr.BoardStateOuterClass.BoardState, thegamblr.BoardStateOuterClass.BoardState.Builder, thegamblr.BoardStateOuterClass.BoardStateOrBuilder> boardStateBuilder_;
       /**
        * <pre>
-       * The current state of the board. Only gets included once per stage. So you will get this once PreFlop, and then it
-       * will be null until the Flop.
+       * The current state of the board. Gets included with every update. If an action_update is present, this is the
+       * board state after the action_update has been applied.
        * </pre>
        *
        * <code>.thegamblr.BoardState board_state = 1;</code>
        * @return Whether the boardState field is set.
        */
-      @java.lang.Override
       public boolean hasBoardState() {
-        return updateCase_ == 1;
+        return boardStateBuilder_ != null || boardState_ != null;
       }
       /**
        * <pre>
-       * The current state of the board. Only gets included once per stage. So you will get this once PreFlop, and then it
-       * will be null until the Flop.
+       * The current state of the board. Gets included with every update. If an action_update is present, this is the
+       * board state after the action_update has been applied.
        * </pre>
        *
        * <code>.thegamblr.BoardState board_state = 1;</code>
        * @return The boardState.
        */
-      @java.lang.Override
       public thegamblr.BoardStateOuterClass.BoardState getBoardState() {
         if (boardStateBuilder_ == null) {
-          if (updateCase_ == 1) {
-            return (thegamblr.BoardStateOuterClass.BoardState) update_;
-          }
-          return thegamblr.BoardStateOuterClass.BoardState.getDefaultInstance();
+          return boardState_ == null ? thegamblr.BoardStateOuterClass.BoardState.getDefaultInstance() : boardState_;
         } else {
-          if (updateCase_ == 1) {
-            return boardStateBuilder_.getMessage();
-          }
-          return thegamblr.BoardStateOuterClass.BoardState.getDefaultInstance();
+          return boardStateBuilder_.getMessage();
         }
       }
       /**
        * <pre>
-       * The current state of the board. Only gets included once per stage. So you will get this once PreFlop, and then it
-       * will be null until the Flop.
+       * The current state of the board. Gets included with every update. If an action_update is present, this is the
+       * board state after the action_update has been applied.
        * </pre>
        *
        * <code>.thegamblr.BoardState board_state = 1;</code>
@@ -1473,18 +1399,18 @@ public final class CasinoOuterClass {
           if (value == null) {
             throw new NullPointerException();
           }
-          update_ = value;
+          boardState_ = value;
           onChanged();
         } else {
           boardStateBuilder_.setMessage(value);
         }
-        updateCase_ = 1;
+
         return this;
       }
       /**
        * <pre>
-       * The current state of the board. Only gets included once per stage. So you will get this once PreFlop, and then it
-       * will be null until the Flop.
+       * The current state of the board. Gets included with every update. If an action_update is present, this is the
+       * board state after the action_update has been applied.
        * </pre>
        *
        * <code>.thegamblr.BoardState board_state = 1;</code>
@@ -1492,99 +1418,89 @@ public final class CasinoOuterClass {
       public Builder setBoardState(
           thegamblr.BoardStateOuterClass.BoardState.Builder builderForValue) {
         if (boardStateBuilder_ == null) {
-          update_ = builderForValue.build();
+          boardState_ = builderForValue.build();
           onChanged();
         } else {
           boardStateBuilder_.setMessage(builderForValue.build());
         }
-        updateCase_ = 1;
+
         return this;
       }
       /**
        * <pre>
-       * The current state of the board. Only gets included once per stage. So you will get this once PreFlop, and then it
-       * will be null until the Flop.
+       * The current state of the board. Gets included with every update. If an action_update is present, this is the
+       * board state after the action_update has been applied.
        * </pre>
        *
        * <code>.thegamblr.BoardState board_state = 1;</code>
        */
       public Builder mergeBoardState(thegamblr.BoardStateOuterClass.BoardState value) {
         if (boardStateBuilder_ == null) {
-          if (updateCase_ == 1 &&
-              update_ != thegamblr.BoardStateOuterClass.BoardState.getDefaultInstance()) {
-            update_ = thegamblr.BoardStateOuterClass.BoardState.newBuilder((thegamblr.BoardStateOuterClass.BoardState) update_)
-                .mergeFrom(value).buildPartial();
+          if (boardState_ != null) {
+            boardState_ =
+              thegamblr.BoardStateOuterClass.BoardState.newBuilder(boardState_).mergeFrom(value).buildPartial();
           } else {
-            update_ = value;
+            boardState_ = value;
           }
           onChanged();
         } else {
-          if (updateCase_ == 1) {
-            boardStateBuilder_.mergeFrom(value);
-          }
-          boardStateBuilder_.setMessage(value);
+          boardStateBuilder_.mergeFrom(value);
         }
-        updateCase_ = 1;
+
         return this;
       }
       /**
        * <pre>
-       * The current state of the board. Only gets included once per stage. So you will get this once PreFlop, and then it
-       * will be null until the Flop.
+       * The current state of the board. Gets included with every update. If an action_update is present, this is the
+       * board state after the action_update has been applied.
        * </pre>
        *
        * <code>.thegamblr.BoardState board_state = 1;</code>
        */
       public Builder clearBoardState() {
         if (boardStateBuilder_ == null) {
-          if (updateCase_ == 1) {
-            updateCase_ = 0;
-            update_ = null;
-            onChanged();
-          }
+          boardState_ = null;
+          onChanged();
         } else {
-          if (updateCase_ == 1) {
-            updateCase_ = 0;
-            update_ = null;
-          }
-          boardStateBuilder_.clear();
+          boardState_ = null;
+          boardStateBuilder_ = null;
         }
+
         return this;
       }
       /**
        * <pre>
-       * The current state of the board. Only gets included once per stage. So you will get this once PreFlop, and then it
-       * will be null until the Flop.
+       * The current state of the board. Gets included with every update. If an action_update is present, this is the
+       * board state after the action_update has been applied.
        * </pre>
        *
        * <code>.thegamblr.BoardState board_state = 1;</code>
        */
       public thegamblr.BoardStateOuterClass.BoardState.Builder getBoardStateBuilder() {
+        
+        onChanged();
         return getBoardStateFieldBuilder().getBuilder();
       }
       /**
        * <pre>
-       * The current state of the board. Only gets included once per stage. So you will get this once PreFlop, and then it
-       * will be null until the Flop.
+       * The current state of the board. Gets included with every update. If an action_update is present, this is the
+       * board state after the action_update has been applied.
        * </pre>
        *
        * <code>.thegamblr.BoardState board_state = 1;</code>
        */
-      @java.lang.Override
       public thegamblr.BoardStateOuterClass.BoardStateOrBuilder getBoardStateOrBuilder() {
-        if ((updateCase_ == 1) && (boardStateBuilder_ != null)) {
+        if (boardStateBuilder_ != null) {
           return boardStateBuilder_.getMessageOrBuilder();
         } else {
-          if (updateCase_ == 1) {
-            return (thegamblr.BoardStateOuterClass.BoardState) update_;
-          }
-          return thegamblr.BoardStateOuterClass.BoardState.getDefaultInstance();
+          return boardState_ == null ?
+              thegamblr.BoardStateOuterClass.BoardState.getDefaultInstance() : boardState_;
         }
       }
       /**
        * <pre>
-       * The current state of the board. Only gets included once per stage. So you will get this once PreFlop, and then it
-       * will be null until the Flop.
+       * The current state of the board. Gets included with every update. If an action_update is present, this is the
+       * board state after the action_update has been applied.
        * </pre>
        *
        * <code>.thegamblr.BoardState board_state = 1;</code>
@@ -1593,60 +1509,54 @@ public final class CasinoOuterClass {
           thegamblr.BoardStateOuterClass.BoardState, thegamblr.BoardStateOuterClass.BoardState.Builder, thegamblr.BoardStateOuterClass.BoardStateOrBuilder> 
           getBoardStateFieldBuilder() {
         if (boardStateBuilder_ == null) {
-          if (!(updateCase_ == 1)) {
-            update_ = thegamblr.BoardStateOuterClass.BoardState.getDefaultInstance();
-          }
           boardStateBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               thegamblr.BoardStateOuterClass.BoardState, thegamblr.BoardStateOuterClass.BoardState.Builder, thegamblr.BoardStateOuterClass.BoardStateOrBuilder>(
-                  (thegamblr.BoardStateOuterClass.BoardState) update_,
+                  getBoardState(),
                   getParentForChildren(),
                   isClean());
-          update_ = null;
+          boardState_ = null;
         }
-        updateCase_ = 1;
-        onChanged();;
         return boardStateBuilder_;
       }
 
+      private thegamblr.ActionOuterClass.Action actionUpdate_;
       private com.google.protobuf.SingleFieldBuilderV3<
           thegamblr.ActionOuterClass.Action, thegamblr.ActionOuterClass.Action.Builder, thegamblr.ActionOuterClass.ActionOrBuilder> actionUpdateBuilder_;
       /**
        * <pre>
-       * These will tell you all actions player's took since the last response you received.
+       * These will tell you all actions player's took since the last response you received. This will be nil 4 times per
+       * round. In the beginning of the Flop, Turn and River, and once at the end of the round. These updates are only
+       * to tell you of cards and results.
        * </pre>
        *
        * <code>.thegamblr.Action action_update = 2;</code>
        * @return Whether the actionUpdate field is set.
        */
-      @java.lang.Override
       public boolean hasActionUpdate() {
-        return updateCase_ == 2;
+        return actionUpdateBuilder_ != null || actionUpdate_ != null;
       }
       /**
        * <pre>
-       * These will tell you all actions player's took since the last response you received.
+       * These will tell you all actions player's took since the last response you received. This will be nil 4 times per
+       * round. In the beginning of the Flop, Turn and River, and once at the end of the round. These updates are only
+       * to tell you of cards and results.
        * </pre>
        *
        * <code>.thegamblr.Action action_update = 2;</code>
        * @return The actionUpdate.
        */
-      @java.lang.Override
       public thegamblr.ActionOuterClass.Action getActionUpdate() {
         if (actionUpdateBuilder_ == null) {
-          if (updateCase_ == 2) {
-            return (thegamblr.ActionOuterClass.Action) update_;
-          }
-          return thegamblr.ActionOuterClass.Action.getDefaultInstance();
+          return actionUpdate_ == null ? thegamblr.ActionOuterClass.Action.getDefaultInstance() : actionUpdate_;
         } else {
-          if (updateCase_ == 2) {
-            return actionUpdateBuilder_.getMessage();
-          }
-          return thegamblr.ActionOuterClass.Action.getDefaultInstance();
+          return actionUpdateBuilder_.getMessage();
         }
       }
       /**
        * <pre>
-       * These will tell you all actions player's took since the last response you received.
+       * These will tell you all actions player's took since the last response you received. This will be nil 4 times per
+       * round. In the beginning of the Flop, Turn and River, and once at the end of the round. These updates are only
+       * to tell you of cards and results.
        * </pre>
        *
        * <code>.thegamblr.Action action_update = 2;</code>
@@ -1656,17 +1566,19 @@ public final class CasinoOuterClass {
           if (value == null) {
             throw new NullPointerException();
           }
-          update_ = value;
+          actionUpdate_ = value;
           onChanged();
         } else {
           actionUpdateBuilder_.setMessage(value);
         }
-        updateCase_ = 2;
+
         return this;
       }
       /**
        * <pre>
-       * These will tell you all actions player's took since the last response you received.
+       * These will tell you all actions player's took since the last response you received. This will be nil 4 times per
+       * round. In the beginning of the Flop, Turn and River, and once at the end of the round. These updates are only
+       * to tell you of cards and results.
        * </pre>
        *
        * <code>.thegamblr.Action action_update = 2;</code>
@@ -1674,94 +1586,94 @@ public final class CasinoOuterClass {
       public Builder setActionUpdate(
           thegamblr.ActionOuterClass.Action.Builder builderForValue) {
         if (actionUpdateBuilder_ == null) {
-          update_ = builderForValue.build();
+          actionUpdate_ = builderForValue.build();
           onChanged();
         } else {
           actionUpdateBuilder_.setMessage(builderForValue.build());
         }
-        updateCase_ = 2;
+
         return this;
       }
       /**
        * <pre>
-       * These will tell you all actions player's took since the last response you received.
+       * These will tell you all actions player's took since the last response you received. This will be nil 4 times per
+       * round. In the beginning of the Flop, Turn and River, and once at the end of the round. These updates are only
+       * to tell you of cards and results.
        * </pre>
        *
        * <code>.thegamblr.Action action_update = 2;</code>
        */
       public Builder mergeActionUpdate(thegamblr.ActionOuterClass.Action value) {
         if (actionUpdateBuilder_ == null) {
-          if (updateCase_ == 2 &&
-              update_ != thegamblr.ActionOuterClass.Action.getDefaultInstance()) {
-            update_ = thegamblr.ActionOuterClass.Action.newBuilder((thegamblr.ActionOuterClass.Action) update_)
-                .mergeFrom(value).buildPartial();
+          if (actionUpdate_ != null) {
+            actionUpdate_ =
+              thegamblr.ActionOuterClass.Action.newBuilder(actionUpdate_).mergeFrom(value).buildPartial();
           } else {
-            update_ = value;
+            actionUpdate_ = value;
           }
           onChanged();
         } else {
-          if (updateCase_ == 2) {
-            actionUpdateBuilder_.mergeFrom(value);
-          }
-          actionUpdateBuilder_.setMessage(value);
+          actionUpdateBuilder_.mergeFrom(value);
         }
-        updateCase_ = 2;
+
         return this;
       }
       /**
        * <pre>
-       * These will tell you all actions player's took since the last response you received.
+       * These will tell you all actions player's took since the last response you received. This will be nil 4 times per
+       * round. In the beginning of the Flop, Turn and River, and once at the end of the round. These updates are only
+       * to tell you of cards and results.
        * </pre>
        *
        * <code>.thegamblr.Action action_update = 2;</code>
        */
       public Builder clearActionUpdate() {
         if (actionUpdateBuilder_ == null) {
-          if (updateCase_ == 2) {
-            updateCase_ = 0;
-            update_ = null;
-            onChanged();
-          }
+          actionUpdate_ = null;
+          onChanged();
         } else {
-          if (updateCase_ == 2) {
-            updateCase_ = 0;
-            update_ = null;
-          }
-          actionUpdateBuilder_.clear();
+          actionUpdate_ = null;
+          actionUpdateBuilder_ = null;
         }
+
         return this;
       }
       /**
        * <pre>
-       * These will tell you all actions player's took since the last response you received.
+       * These will tell you all actions player's took since the last response you received. This will be nil 4 times per
+       * round. In the beginning of the Flop, Turn and River, and once at the end of the round. These updates are only
+       * to tell you of cards and results.
        * </pre>
        *
        * <code>.thegamblr.Action action_update = 2;</code>
        */
       public thegamblr.ActionOuterClass.Action.Builder getActionUpdateBuilder() {
+        
+        onChanged();
         return getActionUpdateFieldBuilder().getBuilder();
       }
       /**
        * <pre>
-       * These will tell you all actions player's took since the last response you received.
+       * These will tell you all actions player's took since the last response you received. This will be nil 4 times per
+       * round. In the beginning of the Flop, Turn and River, and once at the end of the round. These updates are only
+       * to tell you of cards and results.
        * </pre>
        *
        * <code>.thegamblr.Action action_update = 2;</code>
        */
-      @java.lang.Override
       public thegamblr.ActionOuterClass.ActionOrBuilder getActionUpdateOrBuilder() {
-        if ((updateCase_ == 2) && (actionUpdateBuilder_ != null)) {
+        if (actionUpdateBuilder_ != null) {
           return actionUpdateBuilder_.getMessageOrBuilder();
         } else {
-          if (updateCase_ == 2) {
-            return (thegamblr.ActionOuterClass.Action) update_;
-          }
-          return thegamblr.ActionOuterClass.Action.getDefaultInstance();
+          return actionUpdate_ == null ?
+              thegamblr.ActionOuterClass.Action.getDefaultInstance() : actionUpdate_;
         }
       }
       /**
        * <pre>
-       * These will tell you all actions player's took since the last response you received.
+       * These will tell you all actions player's took since the last response you received. This will be nil 4 times per
+       * round. In the beginning of the Flop, Turn and River, and once at the end of the round. These updates are only
+       * to tell you of cards and results.
        * </pre>
        *
        * <code>.thegamblr.Action action_update = 2;</code>
@@ -1770,18 +1682,13 @@ public final class CasinoOuterClass {
           thegamblr.ActionOuterClass.Action, thegamblr.ActionOuterClass.Action.Builder, thegamblr.ActionOuterClass.ActionOrBuilder> 
           getActionUpdateFieldBuilder() {
         if (actionUpdateBuilder_ == null) {
-          if (!(updateCase_ == 2)) {
-            update_ = thegamblr.ActionOuterClass.Action.getDefaultInstance();
-          }
           actionUpdateBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               thegamblr.ActionOuterClass.Action, thegamblr.ActionOuterClass.Action.Builder, thegamblr.ActionOuterClass.ActionOrBuilder>(
-                  (thegamblr.ActionOuterClass.Action) update_,
+                  getActionUpdate(),
                   getParentForChildren(),
                   isClean());
-          update_ = null;
+          actionUpdate_ = null;
         }
-        updateCase_ = 2;
-        onChanged();;
         return actionUpdateBuilder_;
       }
 
@@ -9498,37 +9405,37 @@ public final class CasinoOuterClass {
       "\n\014casino.proto\022\tthegamblr\032\021board_state.p" +
       "roto\032\014action.proto\032\ncard.proto\"O\n\016MyActi" +
       "onPacket\022\022\n\ncurrentPot\030\001 \001(\004\022\023\n\013call_amo" +
-      "unt\030\002 \001(\004\022\024\n\014left_to_call\030\003 \001(\004\"\205\001\n\006Upda" +
-      "te\022,\n\013board_state\030\001 \001(\0132\025.thegamblr.Boar" +
-      "dStateH\000\022*\n\raction_update\030\002 \001(\0132\021.thegam" +
-      "blr.ActionH\000\022\027\n\017sequence_number\030\003 \001(\004B\010\n" +
-      "\006update\"?\n\025ReceiveUpdatesRequest\022\r\n\005toke" +
-      "n\030\001 \001(\t\022\027\n\017sequence_number\030\002 \001(\004\"\261\001\n\026Rec" +
-      "eiveUpdatesResponse\022\"\n\007updates\030\001 \003(\0132\021.t" +
-      "hegamblr.Update\0223\n\020my_action_packet\030\002 \001(" +
-      "\0132\031.thegamblr.MyActionPacket\022 \n\007my_hand\030" +
-      "\003 \003(\0132\017.thegamblr.Card\022\034\n\024next_sequence_" +
-      "number\030\004 \001(\004\"W\n\nActRequest\022\r\n\005token\030\001 \001(" +
-      "\t\022*\n\013action_type\030\002 \001(\0162\025.thegamblr.Actio" +
-      "nType\022\016\n\006amount\030\003 \001(\003\"\r\n\013ActResponse\"5\n\017" +
-      "JoinGameRequest\022\021\n\tplayer_id\030\001 \001(\t\022\017\n\007ga" +
-      "me_id\030\002 \001(\t\"I\n\020JoinGameResponse\022\r\n\005token" +
-      "\030\001 \001(\t\022\023\n\013seat_number\030\002 \001(\r\022\021\n\tplayer_id" +
-      "\030\003 \001(\t\"T\n\021CreateGameRequest\022\023\n\013small_bli" +
-      "nd\030\001 \001(\004\022\022\n\nnum_rounds\030\002 \001(\004\022\026\n\016starting" +
-      "_stack\030\003 \001(\004\"%\n\022CreateGameResponse\022\017\n\007ga" +
-      "me_id\030\001 \001(\t\"!\n\020StartGameRequest\022\r\n\005token" +
-      "\030\002 \001(\t\"\023\n\021StartGameResponse2\355\002\n\006Casino\022I" +
-      "\n\nCreateGame\022\034.thegamblr.CreateGameReque" +
-      "st\032\035.thegamblr.CreateGameResponse\022C\n\010Joi" +
-      "nGame\022\032.thegamblr.JoinGameRequest\032\033.theg" +
-      "amblr.JoinGameResponse\022F\n\tStartGame\022\033.th" +
-      "egamblr.StartGameRequest\032\034.thegamblr.Sta" +
-      "rtGameResponse\022U\n\016ReceiveUpdates\022 .thega" +
-      "mblr.ReceiveUpdatesRequest\032!.thegamblr.R" +
-      "eceiveUpdatesResponse\0224\n\003Act\022\025.thegamblr" +
-      ".ActRequest\032\026.thegamblr.ActResponseB\021Z\017t" +
-      "hegamblr/protob\006proto3"
+      "unt\030\002 \001(\004\022\024\n\014left_to_call\030\003 \001(\004\"w\n\006Updat" +
+      "e\022*\n\013board_state\030\001 \001(\0132\025.thegamblr.Board" +
+      "State\022(\n\raction_update\030\002 \001(\0132\021.thegamblr" +
+      ".Action\022\027\n\017sequence_number\030\003 \001(\004\"?\n\025Rece" +
+      "iveUpdatesRequest\022\r\n\005token\030\001 \001(\t\022\027\n\017sequ" +
+      "ence_number\030\002 \001(\004\"\261\001\n\026ReceiveUpdatesResp" +
+      "onse\022\"\n\007updates\030\001 \003(\0132\021.thegamblr.Update" +
+      "\0223\n\020my_action_packet\030\002 \001(\0132\031.thegamblr.M" +
+      "yActionPacket\022 \n\007my_hand\030\003 \003(\0132\017.thegamb" +
+      "lr.Card\022\034\n\024next_sequence_number\030\004 \001(\004\"W\n" +
+      "\nActRequest\022\r\n\005token\030\001 \001(\t\022*\n\013action_typ" +
+      "e\030\002 \001(\0162\025.thegamblr.ActionType\022\016\n\006amount" +
+      "\030\003 \001(\003\"\r\n\013ActResponse\"5\n\017JoinGameRequest" +
+      "\022\021\n\tplayer_id\030\001 \001(\t\022\017\n\007game_id\030\002 \001(\t\"I\n\020" +
+      "JoinGameResponse\022\r\n\005token\030\001 \001(\t\022\023\n\013seat_" +
+      "number\030\002 \001(\r\022\021\n\tplayer_id\030\003 \001(\t\"T\n\021Creat" +
+      "eGameRequest\022\023\n\013small_blind\030\001 \001(\004\022\022\n\nnum" +
+      "_rounds\030\002 \001(\004\022\026\n\016starting_stack\030\003 \001(\004\"%\n" +
+      "\022CreateGameResponse\022\017\n\007game_id\030\001 \001(\t\"!\n\020" +
+      "StartGameRequest\022\r\n\005token\030\002 \001(\t\"\023\n\021Start" +
+      "GameResponse2\355\002\n\006Casino\022I\n\nCreateGame\022\034." +
+      "thegamblr.CreateGameRequest\032\035.thegamblr." +
+      "CreateGameResponse\022C\n\010JoinGame\022\032.thegamb" +
+      "lr.JoinGameRequest\032\033.thegamblr.JoinGameR" +
+      "esponse\022F\n\tStartGame\022\033.thegamblr.StartGa" +
+      "meRequest\032\034.thegamblr.StartGameResponse\022" +
+      "U\n\016ReceiveUpdates\022 .thegamblr.ReceiveUpd" +
+      "atesRequest\032!.thegamblr.ReceiveUpdatesRe" +
+      "sponse\0224\n\003Act\022\025.thegamblr.ActRequest\032\026.t" +
+      "hegamblr.ActResponseB\021Z\017thegamblr/protob" +
+      "\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -9548,7 +9455,7 @@ public final class CasinoOuterClass {
     internal_static_thegamblr_Update_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_thegamblr_Update_descriptor,
-        new java.lang.String[] { "BoardState", "ActionUpdate", "SequenceNumber", "Update", });
+        new java.lang.String[] { "BoardState", "ActionUpdate", "SequenceNumber", });
     internal_static_thegamblr_ReceiveUpdatesRequest_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_thegamblr_ReceiveUpdatesRequest_fieldAccessorTable = new

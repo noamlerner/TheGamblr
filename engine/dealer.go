@@ -262,31 +262,27 @@ func (d *Dealer) newRound() {
 	d.deck.Shuffle()
 	onPlayer := 0
 	d.board.newRound()
-	boardState := d.board.state()
-	d.board.iterateActivePlayers(func(p *playerState) {
-		p.actor.SeeBoardState(boardState)
-	})
 	d.board.iterateActivePlayers(func(p *playerState) {
 		if p.Status() != PlayerStatusPlaying {
 			return
 		}
-		addedToPot := 0
 		switch onPlayer {
 		case 0:
 			// SmallBlind
-			addedToPot = p.receiveCards(d.deck.NextCards(2), d.gameConfig.SmallBlind)
+			addedToPot := p.receiveCards(d.deck.NextCards(2), d.gameConfig.SmallBlind)
+			d.board.addToPot(addedToPot)
 			d.announceAction(p, SmallBlind, d.gameConfig.SmallBlind)
 			d.lastToRaise = p
 		case 1:
 			// big blind
-			addedToPot = p.receiveCards(d.deck.NextCards(2), d.gameConfig.SmallBlind*2)
+			addedToPot := p.receiveCards(d.deck.NextCards(2), d.gameConfig.SmallBlind*2)
+			d.board.addToPot(addedToPot)
 			d.announceAction(p, BigBlind, d.gameConfig.SmallBlind*2)
 		default:
-			addedToPot = p.receiveCards(d.deck.NextCards(2), 0)
+			p.receiveCards(d.deck.NextCards(2), 0)
 		}
 		onPlayer++
 		d.log.Cards(p)
-		d.board.addToPot(addedToPot)
 	})
 	d.board.addToPot(d.carryOverPot)
 	d.carryOverPot = 0
@@ -295,8 +291,9 @@ func (d *Dealer) newRound() {
 func (d *Dealer) announceAction(p *playerState, action ActionType, amount int) {
 	vAction := newVisibleAction(p.visibleState(), action, amount)
 	d.log.Action(vAction)
+	state := d.board.state()
 	d.board.iterateActivePlayers(func(p *playerState) {
-		p.actor.ActionUpdate(vAction)
+		p.actor.ActionUpdate(vAction, state)
 	})
 }
 

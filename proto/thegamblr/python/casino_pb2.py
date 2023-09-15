@@ -17,7 +17,7 @@ import action_pb2 as action__pb2
 import card_pb2 as card__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0c\x63\x61sino.proto\x12\tthegamblr\x1a\x11\x62oard_state.proto\x1a\x0c\x61\x63tion.proto\x1a\ncard.proto\"O\n\x0eMyActionPacket\x12\x12\n\ncurrentPot\x18\x01 \x01(\x04\x12\x13\n\x0b\x63\x61ll_amount\x18\x02 \x01(\x04\x12\x14\n\x0cleft_to_call\x18\x03 \x01(\x04\"\x85\x01\n\x06Update\x12,\n\x0b\x62oard_state\x18\x01 \x01(\x0b\x32\x15.thegamblr.BoardStateH\x00\x12*\n\raction_update\x18\x02 \x01(\x0b\x32\x11.thegamblr.ActionH\x00\x12\x17\n\x0fsequence_number\x18\x03 \x01(\x04\x42\x08\n\x06update\"?\n\x15ReceiveUpdatesRequest\x12\r\n\x05token\x18\x01 \x01(\t\x12\x17\n\x0fsequence_number\x18\x02 \x01(\x04\"\xb1\x01\n\x16ReceiveUpdatesResponse\x12\"\n\x07updates\x18\x01 \x03(\x0b\x32\x11.thegamblr.Update\x12\x33\n\x10my_action_packet\x18\x02 \x01(\x0b\x32\x19.thegamblr.MyActionPacket\x12 \n\x07my_hand\x18\x03 \x03(\x0b\x32\x0f.thegamblr.Card\x12\x1c\n\x14next_sequence_number\x18\x04 \x01(\x04\"W\n\nActRequest\x12\r\n\x05token\x18\x01 \x01(\t\x12*\n\x0b\x61\x63tion_type\x18\x02 \x01(\x0e\x32\x15.thegamblr.ActionType\x12\x0e\n\x06\x61mount\x18\x03 \x01(\x03\"\r\n\x0b\x41\x63tResponse\"5\n\x0fJoinGameRequest\x12\x11\n\tplayer_id\x18\x01 \x01(\t\x12\x0f\n\x07game_id\x18\x02 \x01(\t\"I\n\x10JoinGameResponse\x12\r\n\x05token\x18\x01 \x01(\t\x12\x13\n\x0bseat_number\x18\x02 \x01(\r\x12\x11\n\tplayer_id\x18\x03 \x01(\t\"T\n\x11\x43reateGameRequest\x12\x13\n\x0bsmall_blind\x18\x01 \x01(\x04\x12\x12\n\nnum_rounds\x18\x02 \x01(\x04\x12\x16\n\x0estarting_stack\x18\x03 \x01(\x04\"%\n\x12\x43reateGameResponse\x12\x0f\n\x07game_id\x18\x01 \x01(\t\"!\n\x10StartGameRequest\x12\r\n\x05token\x18\x02 \x01(\t\"\x13\n\x11StartGameResponse2\xed\x02\n\x06\x43\x61sino\x12I\n\nCreateGame\x12\x1c.thegamblr.CreateGameRequest\x1a\x1d.thegamblr.CreateGameResponse\x12\x43\n\x08JoinGame\x12\x1a.thegamblr.JoinGameRequest\x1a\x1b.thegamblr.JoinGameResponse\x12\x46\n\tStartGame\x12\x1b.thegamblr.StartGameRequest\x1a\x1c.thegamblr.StartGameResponse\x12U\n\x0eReceiveUpdates\x12 .thegamblr.ReceiveUpdatesRequest\x1a!.thegamblr.ReceiveUpdatesResponse\x12\x34\n\x03\x41\x63t\x12\x15.thegamblr.ActRequest\x1a\x16.thegamblr.ActResponseB\x11Z\x0fthegamblr/protob\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0c\x63\x61sino.proto\x12\tthegamblr\x1a\x11\x62oard_state.proto\x1a\x0c\x61\x63tion.proto\x1a\ncard.proto\"O\n\x0eMyActionPacket\x12\x12\n\ncurrentPot\x18\x01 \x01(\x04\x12\x13\n\x0b\x63\x61ll_amount\x18\x02 \x01(\x04\x12\x14\n\x0cleft_to_call\x18\x03 \x01(\x04\"w\n\x06Update\x12*\n\x0b\x62oard_state\x18\x01 \x01(\x0b\x32\x15.thegamblr.BoardState\x12(\n\raction_update\x18\x02 \x01(\x0b\x32\x11.thegamblr.Action\x12\x17\n\x0fsequence_number\x18\x03 \x01(\x04\"?\n\x15ReceiveUpdatesRequest\x12\r\n\x05token\x18\x01 \x01(\t\x12\x17\n\x0fsequence_number\x18\x02 \x01(\x04\"\xb1\x01\n\x16ReceiveUpdatesResponse\x12\"\n\x07updates\x18\x01 \x03(\x0b\x32\x11.thegamblr.Update\x12\x33\n\x10my_action_packet\x18\x02 \x01(\x0b\x32\x19.thegamblr.MyActionPacket\x12 \n\x07my_hand\x18\x03 \x03(\x0b\x32\x0f.thegamblr.Card\x12\x1c\n\x14next_sequence_number\x18\x04 \x01(\x04\"W\n\nActRequest\x12\r\n\x05token\x18\x01 \x01(\t\x12*\n\x0b\x61\x63tion_type\x18\x02 \x01(\x0e\x32\x15.thegamblr.ActionType\x12\x0e\n\x06\x61mount\x18\x03 \x01(\x03\"\r\n\x0b\x41\x63tResponse\"5\n\x0fJoinGameRequest\x12\x11\n\tplayer_id\x18\x01 \x01(\t\x12\x0f\n\x07game_id\x18\x02 \x01(\t\"I\n\x10JoinGameResponse\x12\r\n\x05token\x18\x01 \x01(\t\x12\x13\n\x0bseat_number\x18\x02 \x01(\r\x12\x11\n\tplayer_id\x18\x03 \x01(\t\"T\n\x11\x43reateGameRequest\x12\x13\n\x0bsmall_blind\x18\x01 \x01(\x04\x12\x12\n\nnum_rounds\x18\x02 \x01(\x04\x12\x16\n\x0estarting_stack\x18\x03 \x01(\x04\"%\n\x12\x43reateGameResponse\x12\x0f\n\x07game_id\x18\x01 \x01(\t\"!\n\x10StartGameRequest\x12\r\n\x05token\x18\x02 \x01(\t\"\x13\n\x11StartGameResponse2\xed\x02\n\x06\x43\x61sino\x12I\n\nCreateGame\x12\x1c.thegamblr.CreateGameRequest\x1a\x1d.thegamblr.CreateGameResponse\x12\x43\n\x08JoinGame\x12\x1a.thegamblr.JoinGameRequest\x1a\x1b.thegamblr.JoinGameResponse\x12\x46\n\tStartGame\x12\x1b.thegamblr.StartGameRequest\x1a\x1c.thegamblr.StartGameResponse\x12U\n\x0eReceiveUpdates\x12 .thegamblr.ReceiveUpdatesRequest\x1a!.thegamblr.ReceiveUpdatesResponse\x12\x34\n\x03\x41\x63t\x12\x15.thegamblr.ActRequest\x1a\x16.thegamblr.ActResponseB\x11Z\x0fthegamblr/protob\x06proto3')
 
 
 
@@ -124,28 +124,28 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   DESCRIPTOR._serialized_options = b'Z\017thegamblr/proto'
   _MYACTIONPACKET._serialized_start=72
   _MYACTIONPACKET._serialized_end=151
-  _UPDATE._serialized_start=154
-  _UPDATE._serialized_end=287
-  _RECEIVEUPDATESREQUEST._serialized_start=289
-  _RECEIVEUPDATESREQUEST._serialized_end=352
-  _RECEIVEUPDATESRESPONSE._serialized_start=355
-  _RECEIVEUPDATESRESPONSE._serialized_end=532
-  _ACTREQUEST._serialized_start=534
-  _ACTREQUEST._serialized_end=621
-  _ACTRESPONSE._serialized_start=623
-  _ACTRESPONSE._serialized_end=636
-  _JOINGAMEREQUEST._serialized_start=638
-  _JOINGAMEREQUEST._serialized_end=691
-  _JOINGAMERESPONSE._serialized_start=693
-  _JOINGAMERESPONSE._serialized_end=766
-  _CREATEGAMEREQUEST._serialized_start=768
-  _CREATEGAMEREQUEST._serialized_end=852
-  _CREATEGAMERESPONSE._serialized_start=854
-  _CREATEGAMERESPONSE._serialized_end=891
-  _STARTGAMEREQUEST._serialized_start=893
-  _STARTGAMEREQUEST._serialized_end=926
-  _STARTGAMERESPONSE._serialized_start=928
-  _STARTGAMERESPONSE._serialized_end=947
-  _CASINO._serialized_start=950
-  _CASINO._serialized_end=1315
+  _UPDATE._serialized_start=153
+  _UPDATE._serialized_end=272
+  _RECEIVEUPDATESREQUEST._serialized_start=274
+  _RECEIVEUPDATESREQUEST._serialized_end=337
+  _RECEIVEUPDATESRESPONSE._serialized_start=340
+  _RECEIVEUPDATESRESPONSE._serialized_end=517
+  _ACTREQUEST._serialized_start=519
+  _ACTREQUEST._serialized_end=606
+  _ACTRESPONSE._serialized_start=608
+  _ACTRESPONSE._serialized_end=621
+  _JOINGAMEREQUEST._serialized_start=623
+  _JOINGAMEREQUEST._serialized_end=676
+  _JOINGAMERESPONSE._serialized_start=678
+  _JOINGAMERESPONSE._serialized_end=751
+  _CREATEGAMEREQUEST._serialized_start=753
+  _CREATEGAMEREQUEST._serialized_end=837
+  _CREATEGAMERESPONSE._serialized_start=839
+  _CREATEGAMERESPONSE._serialized_end=876
+  _STARTGAMEREQUEST._serialized_start=878
+  _STARTGAMEREQUEST._serialized_end=911
+  _STARTGAMERESPONSE._serialized_start=913
+  _STARTGAMERESPONSE._serialized_end=932
+  _CASINO._serialized_start=935
+  _CASINO._serialized_end=1300
 # @@protoc_insertion_point(module_scope)

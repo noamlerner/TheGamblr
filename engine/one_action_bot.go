@@ -18,5 +18,5 @@ func (c *OneActionBot) Act(int, int, int) (ActionType, int) {
 	return c.action, 10
 }
 
-func (c *OneActionBot) ActionUpdate(action Action) {
+func (c *OneActionBot) ActionUpdate(action Action, state BoardState) {
 }
