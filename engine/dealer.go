@@ -13,12 +13,38 @@ type dealer struct {
 	carryOverPot int
 }
 
-func newDealer() *dealer {
+func DealerWithDefaultConfig() *dealer {
 	return &dealer{
 		gameConfig: NewDefaultGameConfig(),
 		deck:       NewDeck(),
 		board:      newBoardState(),
 	}
+}
+
+func Dealer(config *GameConfig) *dealer {
+	return &dealer{
+		gameConfig: config,
+		deck:       NewDeck(),
+		board:      newBoardState(),
+	}
+}
+
+func (d *dealer) RunGame() ActiveBoard {
+	if d.gameConfig.NumRounds == -1 {
+		for d.board.playersInGame > 1 {
+			d.playRound()
+		}
+		return d.board.state()
+	}
+
+	for i := 0; i < d.gameConfig.NumRounds; i++ {
+		d.playRound()
+	}
+	return d.board.state()
+}
+
+func (d *dealer) SeatPlayer(id string, player BotPlayer) {
+	d.board.seatPlayer(id, player)
 }
 
 func (d *dealer) playRound() EndRoundPlayers {
@@ -44,7 +70,7 @@ func (d *dealer) endRound(endRoundPlayers EndRoundPlayers) {
 	d.cashOutRound(endRoundPlayers)
 	winnersByID := d.whoShowsTheirHand(endRoundPlayers)
 
-	state := d.board.activeState()
+	state := d.board.state()
 	endRoundBoard := &roundEndBoard{
 		activeBoard: *state.(*activeBoard),
 	}
@@ -217,7 +243,7 @@ func (d *dealer) newRound() {
 	d.deck.Shuffle()
 	onPlayer := 0
 	d.board.newRound()
-	boardState := d.board.activeState()
+	boardState := d.board.state()
 	d.board.iterateActivePlayers(func(p *playerState) {
 		if p.Status() != PlayerStatusPlaying {
 			return
