@@ -52,7 +52,7 @@ func (c *Casino) CreateGame(ctx context.Context, request *proto.CreateGameReques
 	return &proto.CreateGameResponse{GameId: gameID}, nil
 }
 
-func (c *Casino) JoinGame(ctx context.Context, request *proto.JoniGameRequest) (*proto.JoniGameResponse, error) {
+func (c *Casino) JoinGame(ctx context.Context, request *proto.JoinGameRequest) (*proto.JoinGameResponse, error) {
 	gameID := request.GameId
 
 	game, ok := c.games[gameID]
@@ -61,16 +61,27 @@ func (c *Casino) JoinGame(ctx context.Context, request *proto.JoniGameRequest) (
 	}
 
 	token, seatNumber := game.seatPlayer(request.PlayerId)
-	return &proto.JoniGameResponse{
+	return &proto.JoinGameResponse{
 		Token:      fmt.Sprintf(tokenFormat, gameID, token),
 		SeatNumber: uint32(seatNumber),
 		PlayerId:   request.PlayerId,
 	}, nil
 }
 
+func (c *Casino) StartGame(ctx context.Context, request *proto.StartGameRequest) (*proto.StartGameResponse, error) {
+	game, _, err := c.findGameAndPlayer(request.Token)
+	if err != nil {
+		return nil, err
+	}
+	go func() {
+		game.dealer.RunGame()
+	}()
+	return &proto.StartGameResponse{}, nil
+}
+
 func (c *Casino) ReceiveUpdates(ctx context.Context, request *proto.ReceiveUpdatesRequest) (*proto.ReceiveUpdatesResponse, error) {
 	token := request.Token
-	player, err := c.findPlayer(token)
+	_, player, err := c.findGameAndPlayer(token)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +90,7 @@ func (c *Casino) ReceiveUpdates(ctx context.Context, request *proto.ReceiveUpdat
 }
 
 func (c *Casino) Act(ctx context.Context, request *proto.ActRequest) (*proto.ActResponse, error) {
-	player, err := c.findPlayer(request.Token)
+	_, player, err := c.findGameAndPlayer(request.Token)
 	if err != nil {
 		return nil, err
 	}
@@ -88,23 +99,23 @@ func (c *Casino) Act(ctx context.Context, request *proto.ActRequest) (*proto.Act
 	return &proto.ActResponse{}, nil
 }
 
-func (c *Casino) findPlayer(token string) (*grpcBot, error) {
+func (c *Casino) findGameAndPlayer(token string) (*game, *grpcBot, error) {
 	if token == "" {
-		return nil, fmt.Errorf("invalid token")
+		return nil, nil, fmt.Errorf("invalid token")
 	}
 
 	split := strings.Split(token, tokenGameDelimiter)
 	if len(split) != 2 {
-		return nil, fmt.Errorf("invalid token")
+		return nil, nil, fmt.Errorf("invalid token")
 	}
 	game, ok := c.games[split[0]]
 	if !ok {
-		return nil, fmt.Errorf("invalid token")
+		return nil, nil, fmt.Errorf("invalid token")
 	}
 
 	player, ok := game.players[split[1]]
 	if !ok {
-		return nil, fmt.Errorf("invalid token")
+		return nil, nil, fmt.Errorf("invalid token")
 	}
-	return player, nil
+	return game, player, nil
 }

@@ -29,7 +29,9 @@ type CasinoClient interface {
 	// In the response object, the player will receive a player_id which should match unless it was taken, in which case
 	// it will have a number appended to it. The response also provides the players seat number and a token. The token
 	// is necessary to pass up in Action requests to verify who is performing the action.
-	JoinGame(ctx context.Context, in *JoniGameRequest, opts ...grpc.CallOption) (*JoniGameResponse, error)
+	JoinGame(ctx context.Context, in *JoinGameRequest, opts ...grpc.CallOption) (*JoinGameResponse, error)
+	// StartGame start the game!
+	StartGame(ctx context.Context, in *StartGameRequest, opts ...grpc.CallOption) (*StartGameResponse, error)
 	// ReceiveUpdates will return a list of Actions that have occurred since the last time this was called. This should
 	// be constantly polled. It will also return a bool indicating if it is this player's turn. If it is, a call to Act
 	// is expected.
@@ -57,9 +59,18 @@ func (c *casinoClient) CreateGame(ctx context.Context, in *CreateGameRequest, op
 	return out, nil
 }
 
-func (c *casinoClient) JoinGame(ctx context.Context, in *JoniGameRequest, opts ...grpc.CallOption) (*JoniGameResponse, error) {
-	out := new(JoniGameResponse)
+func (c *casinoClient) JoinGame(ctx context.Context, in *JoinGameRequest, opts ...grpc.CallOption) (*JoinGameResponse, error) {
+	out := new(JoinGameResponse)
 	err := c.cc.Invoke(ctx, "/thegamblr.Casino/JoinGame", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *casinoClient) StartGame(ctx context.Context, in *StartGameRequest, opts ...grpc.CallOption) (*StartGameResponse, error) {
+	out := new(StartGameResponse)
+	err := c.cc.Invoke(ctx, "/thegamblr.Casino/StartGame", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +106,9 @@ type CasinoServer interface {
 	// In the response object, the player will receive a player_id which should match unless it was taken, in which case
 	// it will have a number appended to it. The response also provides the players seat number and a token. The token
 	// is necessary to pass up in Action requests to verify who is performing the action.
-	JoinGame(context.Context, *JoniGameRequest) (*JoniGameResponse, error)
+	JoinGame(context.Context, *JoinGameRequest) (*JoinGameResponse, error)
+	// StartGame start the game!
+	StartGame(context.Context, *StartGameRequest) (*StartGameResponse, error)
 	// ReceiveUpdates will return a list of Actions that have occurred since the last time this was called. This should
 	// be constantly polled. It will also return a bool indicating if it is this player's turn. If it is, a call to Act
 	// is expected.
@@ -114,8 +127,11 @@ type UnimplementedCasinoServer struct {
 func (UnimplementedCasinoServer) CreateGame(context.Context, *CreateGameRequest) (*CreateGameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGame not implemented")
 }
-func (UnimplementedCasinoServer) JoinGame(context.Context, *JoniGameRequest) (*JoniGameResponse, error) {
+func (UnimplementedCasinoServer) JoinGame(context.Context, *JoinGameRequest) (*JoinGameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method JoinGame not implemented")
+}
+func (UnimplementedCasinoServer) StartGame(context.Context, *StartGameRequest) (*StartGameResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartGame not implemented")
 }
 func (UnimplementedCasinoServer) ReceiveUpdates(context.Context, *ReceiveUpdatesRequest) (*ReceiveUpdatesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReceiveUpdates not implemented")
@@ -155,7 +171,7 @@ func _Casino_CreateGame_Handler(srv interface{}, ctx context.Context, dec func(i
 }
 
 func _Casino_JoinGame_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(JoniGameRequest)
+	in := new(JoinGameRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -167,7 +183,25 @@ func _Casino_JoinGame_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: "/thegamblr.Casino/JoinGame",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CasinoServer).JoinGame(ctx, req.(*JoniGameRequest))
+		return srv.(CasinoServer).JoinGame(ctx, req.(*JoinGameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Casino_StartGame_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartGameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CasinoServer).StartGame(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/thegamblr.Casino/StartGame",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CasinoServer).StartGame(ctx, req.(*StartGameRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -222,6 +256,10 @@ var Casino_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "JoinGame",
 			Handler:    _Casino_JoinGame_Handler,
+		},
+		{
+			MethodName: "StartGame",
+			Handler:    _Casino_StartGame_Handler,
 		},
 		{
 			MethodName: "ReceiveUpdates",
