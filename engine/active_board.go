@@ -3,7 +3,7 @@ package engine
 type ActiveBoard interface {
 	// CommunityCards are the cards currently on the board. The first three cards will always be the flop, then the
 	// turn, then the river.
-	CommunityCards() []*Card
+	CommunityCards() Cards
 	// Pot returns the size of the current Pot.
 	Pot() int
 	// Stage returns what the current Stage is, PreFlop, Flop, Turn or River.
@@ -23,7 +23,7 @@ type activeBoard struct {
 	vPlayers         []ActivePlayerState
 }
 
-func (v *activeBoard) CommunityCards() []*Card {
+func (v *activeBoard) CommunityCards() Cards {
 	return v.communityCards
 }
 

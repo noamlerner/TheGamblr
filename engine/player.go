@@ -1,16 +1,5 @@
 package engine
 
-type Action int
-
-const (
-	FoldAction Action = iota
-	CallAction
-	RaiseAction
-	CheckFold
-	SmallBlind
-	BigBlind
-)
-
 type BotPlayer interface {
 	// ReceiveCards is a way to give every player the information as to what cards they will be playing with this
 	// round.

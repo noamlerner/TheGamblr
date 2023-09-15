@@ -1,16 +1,20 @@
 package engine
 
+import "fmt"
+
 type Card struct {
 	rank Rank
 	suit Suit
 }
+
+const cardNameFormat = "%s of %s"
 
 func NewCard(rank Rank, suit Suit) *Card {
 	return &Card{rank: rank, suit: suit}
 }
 
 func (c *Card) Name() string {
-	return c.rank.Name() + c.suit.Name()
+	return fmt.Sprintf(cardNameFormat, c.rank.Name(), c.suit.Name())
 }
 
 func StrToCard(name string) *Card {

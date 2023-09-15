@@ -23,19 +23,18 @@ func newBoardState() *boardState {
 // addCommunityCards adds community cards.
 func (b *boardState) addCommunityCards(card ...*Card) {
 	b.communityCards = append(b.communityCards, card...)
-	b.iterateActivePlayers(func(p *playerState) {
-		p.actor.SeeActiveBoardState(b.state())
-	})
 }
 
 // seatPlayer finds an open seat for the player and puts him there.
-func (b *boardState) seatPlayer(id string, bot BotPlayer) {
+func (b *boardState) seatPlayer(id string, bot BotPlayer, startingStack int) {
 	for i, p := range b.players {
 		if p == nil {
 			b.players[i] = &playerState{
 				activePlayerState: activePlayerState{
 					seatNumber: i,
 					id:         id,
+					stack:      startingStack,
+					status:     PlayerStatusPlaying,
 				},
 				actor: bot}
 			return
@@ -124,6 +123,7 @@ func (b *boardState) newRound() {
 	b.moveSmallBlindButton()
 	b.pot = 0
 	b.stage = PreFlop
+	b.communityCards = make([]*Card, 0, 5)
 }
 
 // addToPot adds an amount to the pot.
