@@ -104,7 +104,7 @@ func (b *boardState) nextStage() Stage {
 	return b.stage
 }
 
-// newRound performs the following actions
+// newRound performs the following sequence
 // 1. Call newRound on all players
 // // 1. Clears out the players cards
 // // 2. Marks the player as out of the game if their stack is at 0

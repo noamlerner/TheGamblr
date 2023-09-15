@@ -247,7 +247,7 @@ func (d *Dealer) splitPot(winners EndRoundPlayers) {
 	}
 }
 
-// newRound performs the following actions
+// newRound performs the following sequence
 // 1. Shuffle the deck
 // 2. Call board.newRound
 // // 1. Call newRound on all players
@@ -343,11 +343,16 @@ func (d *Dealer) betting() {
 	for iterate == true {
 		iterate = false
 		d.board.iterateActivePlayersFromTo(startAt, endAt, func(player *playerState) {
+			// AllIn players dont get to act
 			if player.Status() == PlayerStatusAllIn ||
+				// Folded players don't get to act
 				player.Status() == PlayerStatusFolded ||
-				d.board.actingPlayersInRound == 1 {
-				// We do not want to play folded players.
-				// We also skip everyone if there is only one player left - that player won.
+				// everyone else is folded, so we have a winner.
+				d.board.playersInRound == 1 ||
+				// One acting player in round and it's the first action? means everyone else is all in, we skip to the
+				//end
+				(firstAction && d.board.actingPlayersInRound == 1) {
+
 				return
 			}
 			action, raiseTo := player.actor.Act(d.board.pot, callAmount, callAmount-player.chipsEnteredThisStage)
@@ -419,7 +424,7 @@ func (d *Dealer) findWinners() EndRoundPlayers {
 	if d.board.playersInRound == 1 {
 		var lastManStanding *playerState
 		d.board.iterateActivePlayers(func(p *playerState) {
-			if p.Status() == PlayerStatusPlaying {
+			if p.Status() == PlayerStatusPlaying || p.Status() == PlayerStatusAllIn {
 				lastManStanding = p
 			}
 		})
