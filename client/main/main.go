@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 
-	"pokerengine/client"
-	"pokerengine/engine"
+	"github.com/noamlerner/TheGamblr/client"
+	"github.com/noamlerner/TheGamblr/engine"
 )
 
 func main() {

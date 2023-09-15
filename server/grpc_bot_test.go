@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"pokerengine/engine"
-	"pokerengine/proto/thegamblr/proto"
+	"github.com/noamlerner/TheGamblr/engine"
+	"github.com/noamlerner/TheGamblr/proto/thegamblr/proto"
 
 	"github.com/stretchr/testify/assert"
 )

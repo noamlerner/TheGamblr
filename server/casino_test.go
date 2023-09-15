@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"pokerengine/proto/thegamblr/proto"
+	"github.com/noamlerner/TheGamblr/proto/thegamblr/proto"
 
 	"github.com/stretchr/testify/assert"
 )

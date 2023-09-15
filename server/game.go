@@ -1,7 +1,7 @@
 package server
 
 import (
-	"pokerengine/engine"
+	"github.com/noamlerner/TheGamblr/engine"
 
 	"github.com/google/uuid"
 )

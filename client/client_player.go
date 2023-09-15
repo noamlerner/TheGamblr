@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"pokerengine/engine"
-	"pokerengine/proto/thegamblr/proto"
+	"github.com/noamlerner/TheGamblr/engine"
+	"github.com/noamlerner/TheGamblr/proto/thegamblr/proto"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

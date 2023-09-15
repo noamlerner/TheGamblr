@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net"
 
-	"pokerengine/proto/thegamblr/proto"
-	"pokerengine/server"
+	"github.com/noamlerner/TheGamblr/proto/thegamblr/proto"
+	"github.com/noamlerner/TheGamblr/server"
 
 	"google.golang.org/grpc"
 )
