@@ -1,4 +1,4 @@
-package pokerengine
+package TheGamblr
 
 type BoardPlayers []*BoardPlayer
 type BoardPlayerFunc func(p *BoardPlayer)

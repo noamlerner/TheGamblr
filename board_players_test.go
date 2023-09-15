@@ -1,4 +1,4 @@
-package pokerengine
+package TheGamblr
 
 import (
 	"strconv"
@@ -102,7 +102,7 @@ func TestBoardPlayers_IterateActiveUntil(t *testing.T) {
 			[]int{1, 2, 4, 7},
 		},
 		{
-			"3->6 No Players",
+			"3->6 No PlayerResults",
 			3, 6,
 			[]int{1, 2, 7},
 		},
@@ -141,11 +141,14 @@ func setupPlayers(playersAtSeats []int) (BoardPlayers, map[int]bool) {
 	seen := map[int]bool{}
 	for _, seat := range playersAtSeats {
 		players[seat] = &BoardPlayer{
-			id:         strconv.Itoa(seat),
-			stack:      100,
-			actor:      &OneActionBot{action: CallAction},
-			seatNumber: seat,
-			status:     BoardPlayerStatusPlaying}
+			activePlayerState: activePlayerState{
+				id:         strconv.Itoa(seat),
+				stack:      100,
+				seatNumber: seat,
+				status:     BoardPlayerStatusPlaying,
+			},
+			actor: &OneActionBot{action: CallAction},
+		}
 		seen[seat] = false
 	}
 	return players, seen

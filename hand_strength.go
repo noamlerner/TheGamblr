@@ -1,9 +1,10 @@
-package pokerengine
+package TheGamblr
 
 type HandStrength int
 
 const (
-	HighCard HandStrength = iota
+	HandStrengthUnset HandStrength = iota
+	HighCard
 	Pair
 	TwoPair
 	Trips

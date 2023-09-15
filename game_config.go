@@ -1,4 +1,4 @@
-package pokerengine
+package TheGamblr
 
 type GameConfig struct {
 	smallBlind int

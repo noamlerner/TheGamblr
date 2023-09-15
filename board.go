@@ -1,28 +1,29 @@
-package pokerengine
+package TheGamblr
 
 type Board struct {
-	communityCards []*Card
-	pot            int
-	stage          Stage
-
+	activeBoard
 	players BoardPlayers
 	// Counts players that are not folded
 	playersInRound int
 	// Counts players that are not folded and are not AllIn
 	actingPlayersInRound int
-	smallBlindButton     int
 }
 
 func NewBoard() *Board {
 	return &Board{
-		communityCards: make([]*Card, 0, 5),
-		players:        make([]*BoardPlayer, 8),
+		activeBoard: activeBoard{
+			communityCards: make([]*Card, 0, 5),
+		},
+		players: make([]*BoardPlayer, 8),
 	}
 }
 
 // AddCommunityCards adds community cards.
 func (b *Board) AddCommunityCards(card ...*Card) {
 	b.communityCards = append(b.communityCards, card...)
+	b.IterateActivePlayers(func(p *BoardPlayer) {
+		p.actor.SeeActiveBoardState(b.ActiveState())
+	})
 }
 
 // Flop returns the current flop (first 3 community cards).
@@ -44,7 +45,12 @@ func (b *Board) River() *Card {
 func (b *Board) SeatPlayer(id string, bot BotPlayer) {
 	for i, p := range b.players {
 		if p == nil {
-			b.players[i] = &BoardPlayer{id: id, actor: bot, seatNumber: i}
+			b.players[i] = &BoardPlayer{
+				activePlayerState: activePlayerState{
+					seatNumber: i,
+					id:         id,
+				},
+				actor: bot}
 			return
 		}
 	}
@@ -143,4 +149,20 @@ func (b *Board) IterateActivePlayers(f BoardPlayerFunc) {
 
 func (b *Board) IterateActivePlayersFromTo(fromSeat, toSeat int, f BoardPlayerFunc) {
 	b.players.IterateActiveUntil(fromSeat, toSeat, f)
+}
+
+func (b *Board) ActiveState() ActiveBoard {
+	b.activeBoard.vPlayers = make([]ActivePlayerState, 8)
+	for i, p := range b.players {
+		b.activeBoard.vPlayers[i] = p.VisibleBoardPlayer()
+	}
+	return &b.activeBoard
+}
+
+func (b *Board) FinalBoardForRound() ActiveBoard {
+	b.activeBoard.vPlayers = make([]ActivePlayerState, 8)
+	for i, p := range b.players {
+		b.activeBoard.vPlayers[i] = p.VisibleBoardPlayer()
+	}
+	return &b.activeBoard
 }

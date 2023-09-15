@@ -1,16 +1,13 @@
-package pokerengine
+package TheGamblr
 
 type BoardPlayer struct {
-	stack int
+	activePlayerState
 	// Chips entered on PreFlop, Flop, Turn or River.
 	chipsEnteredThisStage int
 	// Chips entered anytime since cards were received.
 	chipsEnteredThisRound int
 	cards                 Cards
-	status                BoardPlayerStatus
-	id                    string
 	actor                 BotPlayer
-	seatNumber            int
 }
 
 func (b *BoardPlayer) SetSeatNumber(seatNumber int) {
@@ -21,10 +18,10 @@ func (b *BoardPlayer) Fold() {
 	b.status = BoardPlayerStatusFolded
 }
 
-func (b *BoardPlayer) ReceiveCards(cards Cards, blindAmount int) int {
+func (b *BoardPlayer) ReceiveCards(cards Cards, blindAmount int, boardState ActiveBoard) int {
 	b.chipsEnteredThisStage = 0
 	b.cards = cards
-	b.actor.ReceiveCards(cards, blindAmount)
+	b.actor.ReceiveCards(cards, blindAmount, boardState)
 	return b.RemoveChips(blindAmount)
 }
 
@@ -65,4 +62,11 @@ func (b *BoardPlayer) RemoveChips(amount int) int {
 	b.chipsEnteredThisStage += amount
 	b.chipsEnteredThisRound += amount
 	return amount
+}
+
+func (b *BoardPlayer) VisibleBoardPlayer() *activePlayerState {
+	if b == nil {
+		return nil
+	}
+	return &b.activePlayerState
 }

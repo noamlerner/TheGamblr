@@ -1,4 +1,4 @@
-package pokerengine
+package TheGamblr
 
 import (
 	"testing"
@@ -27,14 +27,15 @@ func TestReceiveCards(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			player := &BoardPlayer{
-				stack:  100,
-				status: BoardPlayerStatusPlaying,
-				actor:  &OneActionBot{action: CallAction},
+				activePlayerState: activePlayerState{
+					stack:  100,
+					status: BoardPlayerStatusPlaying,
+				},
+				actor: &OneActionBot{action: CallAction},
 			}
 
 			cards := GenerateRandHand()[:2]
-			blindPaid := player.ReceiveCards(cards, test.blindAmount)
-
+			blindPaid := player.ReceiveCards(cards, test.blindAmount, nil)
 			assert.Equal(t, MinInt(test.blindAmount, 100), blindPaid)
 			assert.Equal(t, MaxInt(0, 100-test.blindAmount), player.stack)
 			assert.Equal(t, Cards(cards), player.cards)
